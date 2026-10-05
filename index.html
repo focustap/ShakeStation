@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ShakeStation</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="game-shell">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <div>
+          <div class="brand-name">ShakeStation</div>
+          <div class="brand-sub">Day 1 · Morning Shift</div>
+        </div>
+      </div>
+
+      <div class="hud">
+        <div class="hud-card">
+          <span class="hud-label">Cash</span>
+          <strong>$24.50</strong>
+        </div>
+        <div class="hud-card">
+          <span class="hud-label">Orders</span>
+          <strong id="orderCount">3</strong>
+        </div>
+        <button class="menu-button" type="button" aria-label="Open menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </header>
+
+    <nav class="station-nav" aria-label="Stations">
+      <button class="station-tab active" data-station="order">Order</button>
+      <button class="station-tab" data-station="blend">Blend</button>
+      <button class="station-tab" data-station="top">Top</button>
+      <button class="station-tab" data-station="serve">Serve</button>
+    </nav>
+
+    <main class="workspace">
+      <aside class="orders-panel">
+        <div class="panel-heading">
+          <div>
+            <span class="eyebrow">Queue</span>
+            <h2>Orders</h2>
+          </div>
+          <span class="queue-pill">3 waiting</span>
+        </div>
+
+        <div class="tickets">
+          <button class="ticket active" type="button">
+            <span class="ticket-number">#01</span>
+            <span class="ticket-name">Strawberry Classic</span>
+            <span class="ticket-meta">M · Vanilla · Strawberry</span>
+            <span class="ticket-progress"><i style="width:72%"></i></span>
+          </button>
+
+          <button class="ticket" type="button">
+            <span class="ticket-number">#02</span>
+            <span class="ticket-name">Cookie Crunch</span>
+            <span class="ticket-meta">L · Chocolate · Cookie</span>
+            <span class="ticket-progress"><i style="width:34%"></i></span>
+          </button>
+
+          <button class="ticket" type="button">
+            <span class="ticket-number">#03</span>
+            <span class="ticket-name">Berry Swirl</span>
+            <span class="ticket-meta">S · Strawberry · Vanilla</span>
+            <span class="ticket-progress"><i style="width:12%"></i></span>
+          </button>
+        </div>
+      </aside>
+
+      <section class="station-area">
+        <div class="station-card">
+          <div class="station-header">
+            <div>
+              <span class="eyebrow">Current station</span>
+              <h1 id="stationTitle">Order Station</h1>
+              <p id="stationDescription">Read the ticket, choose the cup size, then send it to blending.</p>
+            </div>
+            <div class="step-badge">Step <strong id="stepNumber">1</strong>/4</div>
+          </div>
+
+          <div class="counter-scene">
+            <div class="back-wall">
+              <div class="menu-board">
+                <span>BASES</span>
+                <b>Vanilla</b>
+                <b>Chocolate</b>
+                <b>Strawberry</b>
+              </div>
+              <div class="menu-board">
+                <span>SYRUPS</span>
+                <b>Strawberry</b>
+                <b>Chocolate</b>
+                <b>Caramel</b>
+              </div>
+              <div class="menu-board">
+                <span>TOPPINGS</span>
+                <b>Cookies</b>
+                <b>Sprinkles</b>
+                <b>Strawberries</b>
+              </div>
+            </div>
+
+            <div class="counter">
+              <div class="shake-preview">
+                <div class="cup" id="cupPreview">
+                  <div class="cream"></div>
+                  <div class="shake-fill"></div>
+                  <div class="cup-label">SS</div>
+                </div>
+              </div>
+
+              <div class="controls-panel" id="stationControls">
+                <div class="control-group">
+                  <span class="control-label">Cup size</span>
+                  <div class="option-row">
+                    <button class="option" type="button">S</button>
+                    <button class="option active" type="button">M</button>
+                    <button class="option" type="button">L</button>
+                  </div>
+                </div>
+
+                <div class="control-group">
+                  <span class="control-label">Base</span>
+                  <div class="option-grid">
+                    <button class="flavor vanilla active" type="button"><i></i>Vanilla</button>
+                    <button class="flavor chocolate" type="button"><i></i>Chocolate</button>
+                    <button class="flavor strawberry" type="button"><i></i>Strawberry</button>
+                  </div>
+                </div>
+
+                <button class="primary-action" type="button" id="nextButton">Send to Blend Station</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="customer-panel">
+        <span class="eyebrow">Customer</span>
+        <div class="customer-card">
+          <div class="customer-avatar" aria-hidden="true">
+            <span class="hair"></span>
+            <span class="face"></span>
+          </div>
+          <h3>Maya</h3>
+          <p>"Something strawberry, but not too sweet."</p>
+          <div class="patience">
+            <span>Patience</span>
+            <div><i></i></div>
+          </div>
+        </div>
+
+        <div class="goal-card">
+          <span class="eyebrow">Shift goal</span>
+          <strong>$75.00</strong>
+          <div class="goal-bar"><i></i></div>
+          <small>$24.50 earned</small>
+        </div>
+      </aside>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -44,16 +44,30 @@
 
       <section class="station-view active" id="view-order">
         <div class="restaurant-scene">
+          <div class="ceiling-lights"><i></i><i></i><i></i></div>
           <div class="wall-stripe"></div>
-          <div class="window"></div>
+          <div class="window">
+            <span class="window-cloud one"></span>
+            <span class="window-cloud two"></span>
+          </div>
+          <div class="open-sign">OPEN</div>
           <div class="menu-board">
             <b>SHAKES</b><span>Vanilla</span><span>Chocolate</span><span>Strawberry</span>
             <b>BURGERS</b><span>Cheese</span><span>Lettuce</span><span>Tomato</span><span>Onion</span>
           </div>
+          <div class="booth"><i></i><i></i></div>
+          <div class="plant"><i></i></div>
           <div class="front-counter"></div>
-          <div class="door"></div>
+          <div class="door"><span></span></div>
+          <div id="lobbyWaiting" class="lobby-waiting"></div>
+
           <div id="customer" class="customer">
-            <div class="head"><i></i></div>
+            <div class="head">
+              <span class="hair"></span>
+              <span class="eye eye-left"></span>
+              <span class="eye eye-right"></span>
+              <span class="mouth"></span>
+            </div>
             <div class="body"></div>
           </div>
           <div id="speech" class="speech">Welcome to ShakeStation!</div>
@@ -106,34 +120,46 @@
       <section class="station-view" id="view-shake">
         <div class="shake-workbench">
           <div class="shake-machine">
-            <div class="dispenser"></div>
-            <div class="shake-cup">
+            <div class="pour-rig">
+              <div class="machine-face"><i></i><i></i><i></i></div>
+              <div class="nozzle"></div>
+              <div id="pourStream" class="pour-stream"></div>
+            </div>
+
+            <div id="shakeCup" class="shake-cup">
               <div id="shakeLiquid" class="liquid"></div>
+              <div id="shakeSyrup" class="syrup-layer"></div>
               <div id="shakeSwirl" class="swirl"></div>
+              <div id="shakeToppings" class="topping-layer"></div>
               <div class="cup-logo">SS</div>
             </div>
           </div>
+
           <div class="shake-controls">
             <div class="control-block">
-              <span>POUR BASE</span>
+              <span>POUR BASE · HOLD</span>
               <div>
                 <button data-base="vanilla">Vanilla</button>
                 <button data-base="chocolate">Chocolate</button>
                 <button data-base="strawberry">Strawberry</button>
               </div>
+              <div class="action-meter"><i id="pourMeter"></i></div>
             </div>
+
             <div class="control-block">
-              <span>STIR</span>
+              <span>STIR · HOLD</span>
               <button id="stirButton" class="wide">HOLD TO STIR</button>
               <div class="stir-meter"><i id="stirMeter"></i></div>
             </div>
+
             <div class="control-block">
-              <span>SYRUP</span>
+              <span>SYRUP · HOLD</span>
               <div>
                 <button data-syrup="chocolate">Chocolate</button>
                 <button data-syrup="strawberry">Strawberry</button>
                 <button data-syrup="caramel">Caramel</button>
               </div>
+              <div class="action-meter syrup-meter"><i id="syrupMeter"></i></div>
             </div>
           </div>
         </div>
@@ -141,8 +167,16 @@
 
       <section class="station-view" id="view-finish">
         <div class="finish-grid">
-          <div class="finish-card">
+          <div class="finish-card toppings-card">
             <h3>SHAKE TOPPINGS</h3>
+            <div class="finish-preview">
+              <div class="finish-cup">
+                <div id="finishLiquid" class="liquid"></div>
+                <div id="finishSyrup" class="syrup-layer"></div>
+                <div id="finishToppings" class="topping-layer"></div>
+                <div class="cup-logo">SS</div>
+              </div>
+            </div>
             <div class="topping-buttons">
               <button data-topping="whipped">Whipped Cream</button>
               <button data-topping="sprinkles">Sprinkles</button>
@@ -151,6 +185,7 @@
               <button data-topping="cherry">Cherry</button>
             </div>
           </div>
+
           <div class="finish-card">
             <h3>CURRENT BUILD</h3>
             <div id="buildSummary" class="build-summary">Select a ticket to start building.</div>

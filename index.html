@@ -1,171 +1,187 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>ShakeStation</title>
-  <link rel="stylesheet" href="styles.css" />
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ShakeStation</title>
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="game-shell">
-    <header class="topbar">
-      <div class="brand">
-        <span class="brand-mark" aria-hidden="true"></span>
+<div class="game">
+  <header class="topbar">
+    <div class="logo">SHAKE<span>STATION</span></div>
+    <div class="shift">DAY 1 · MORNING SHIFT</div>
+    <div class="stats">
+      <div><small>CASH</small><b id="cash">$0.00</b></div>
+      <div><small>SERVED</small><b id="served">0</b></div>
+      <button class="menu" aria-label="Menu"><i></i><i></i><i></i></button>
+    </div>
+  </header>
+
+  <nav class="stations">
+    <button class="station active" data-station="order">ORDER</button>
+    <button class="station" data-station="grill">GRILL</button>
+    <button class="station" data-station="burger">BURGER</button>
+    <button class="station" data-station="shake">SHAKE</button>
+    <button class="station" data-station="finish">FINISH</button>
+    <button class="station" data-station="serve">SERVE</button>
+  </nav>
+
+  <main class="layout">
+    <aside class="tickets-panel">
+      <div class="panel-title"><span>ORDER TICKETS</span><b id="ticketCount">0</b></div>
+      <div id="tickets" class="tickets"></div>
+    </aside>
+
+    <section class="play-area">
+      <div class="scene-header">
         <div>
-          <div class="brand-name">ShakeStation</div>
-          <div class="brand-sub">Day 1 · Morning Shift</div>
+          <small id="stationKicker">FRONT COUNTER</small>
+          <h1 id="stationTitle">Order Station</h1>
         </div>
+        <p id="stationHelp">Customers walk in, tell you what they want, and their ticket joins the queue.</p>
       </div>
 
-      <div class="hud">
-        <div class="hud-card">
-          <span class="hud-label">Cash</span>
-          <strong>$24.50</strong>
+      <section class="station-view active" id="view-order">
+        <div class="restaurant-scene">
+          <div class="wall-stripe"></div>
+          <div class="window"></div>
+          <div class="menu-board">
+            <b>SHAKES</b><span>Vanilla</span><span>Chocolate</span><span>Strawberry</span>
+            <b>BURGERS</b><span>Cheese</span><span>Lettuce</span><span>Tomato</span><span>Onion</span>
+          </div>
+          <div class="front-counter"></div>
+          <div class="door"></div>
+          <div id="customer" class="customer">
+            <div class="head"><i></i></div>
+            <div class="body"></div>
+          </div>
+          <div id="speech" class="speech">Welcome to ShakeStation!</div>
         </div>
-        <div class="hud-card">
-          <span class="hud-label">Orders</span>
-          <strong id="orderCount">3</strong>
-        </div>
-        <button class="menu-button" type="button" aria-label="Open menu">
-          <span></span><span></span><span></span>
-        </button>
-      </div>
-    </header>
-
-    <nav class="station-nav" aria-label="Stations">
-      <button class="station-tab active" data-station="order">Order</button>
-      <button class="station-tab" data-station="blend">Blend</button>
-      <button class="station-tab" data-station="top">Top</button>
-      <button class="station-tab" data-station="serve">Serve</button>
-    </nav>
-
-    <main class="workspace">
-      <aside class="orders-panel">
-        <div class="panel-heading">
+        <div class="order-controls">
           <div>
-            <span class="eyebrow">Queue</span>
-            <h2>Orders</h2>
+            <small>CURRENT CUSTOMER</small>
+            <h2 id="customerName">Waiting...</h2>
+            <p id="orderText">A customer will walk in shortly.</p>
           </div>
-          <span class="queue-pill">3 waiting</span>
+          <button id="takeOrder" class="big-button" disabled>TAKE ORDER</button>
         </div>
+      </section>
 
-        <div class="tickets">
-          <button class="ticket active" type="button">
-            <span class="ticket-number">#01</span>
-            <span class="ticket-name">Strawberry Classic</span>
-            <span class="ticket-meta">M · Vanilla · Strawberry</span>
-            <span class="ticket-progress"><i style="width:72%"></i></span>
-          </button>
-
-          <button class="ticket" type="button">
-            <span class="ticket-number">#02</span>
-            <span class="ticket-name">Cookie Crunch</span>
-            <span class="ticket-meta">L · Chocolate · Cookie</span>
-            <span class="ticket-progress"><i style="width:34%"></i></span>
-          </button>
-
-          <button class="ticket" type="button">
-            <span class="ticket-number">#03</span>
-            <span class="ticket-name">Berry Swirl</span>
-            <span class="ticket-meta">S · Strawberry · Vanilla</span>
-            <span class="ticket-progress"><i style="width:12%"></i></span>
-          </button>
-        </div>
-      </aside>
-
-      <section class="station-area">
-        <div class="station-card">
-          <div class="station-header">
-            <div>
-              <span class="eyebrow">Current station</span>
-              <h1 id="stationTitle">Order Station</h1>
-              <p id="stationDescription">Read the ticket, choose the cup size, then send it to blending.</p>
-            </div>
-            <div class="step-badge">Step <strong id="stepNumber">1</strong>/4</div>
+      <section class="station-view" id="view-grill">
+        <div class="grill-wrap">
+          <div class="grill">
+            <div class="grill-lines"></div>
+            <button class="patty-slot" data-slot="0"><span>+</span></button>
+            <button class="patty-slot" data-slot="1"><span>+</span></button>
+            <button class="patty-slot" data-slot="2"><span>+</span></button>
           </div>
+          <div class="grill-legend"><span>RAW</span><span>GOOD</span><span>BURNT</span></div>
+        </div>
+        <div class="station-actions">
+          <p>Click an empty spot to put down a patty. Click a cooking patty to pull it off. Leave it too long and it burns.</p>
+          <div class="heat-key"><i></i><span>Best cook window: about 6–11 seconds</span></div>
+        </div>
+      </section>
 
-          <div class="counter-scene">
-            <div class="back-wall">
-              <div class="menu-board">
-                <span>BASES</span>
-                <b>Vanilla</b>
-                <b>Chocolate</b>
-                <b>Strawberry</b>
-              </div>
-              <div class="menu-board">
-                <span>SYRUPS</span>
-                <b>Strawberry</b>
-                <b>Chocolate</b>
-                <b>Caramel</b>
-              </div>
-              <div class="menu-board">
-                <span>TOPPINGS</span>
-                <b>Cookies</b>
-                <b>Sprinkles</b>
-                <b>Strawberries</b>
+      <section class="station-view" id="view-burger">
+        <div class="build-counter">
+          <div class="burger-pad">
+            <div class="burger-stack" id="burgerStack"><div class="bun bottom"></div></div>
+          </div>
+          <div class="ingredient-tray">
+            <button data-burger="patty">Patty</button>
+            <button data-burger="cheese">Cheese</button>
+            <button data-burger="lettuce">Lettuce</button>
+            <button data-burger="tomato">Tomato</button>
+            <button data-burger="onion">Onion</button>
+            <button data-burger="pickles">Pickles</button>
+            <button data-burger="ketchup">Ketchup</button>
+            <button data-burger="topbun">Top Bun</button>
+          </div>
+        </div>
+        <button id="clearBurger" class="small-action">CLEAR BURGER</button>
+      </section>
+
+      <section class="station-view" id="view-shake">
+        <div class="shake-workbench">
+          <div class="shake-machine">
+            <div class="dispenser"></div>
+            <div class="shake-cup">
+              <div id="shakeLiquid" class="liquid"></div>
+              <div id="shakeSwirl" class="swirl"></div>
+              <div class="cup-logo">SS</div>
+            </div>
+          </div>
+          <div class="shake-controls">
+            <div class="control-block">
+              <span>POUR BASE</span>
+              <div>
+                <button data-base="vanilla">Vanilla</button>
+                <button data-base="chocolate">Chocolate</button>
+                <button data-base="strawberry">Strawberry</button>
               </div>
             </div>
-
-            <div class="counter">
-              <div class="shake-preview">
-                <div class="cup" id="cupPreview">
-                  <div class="cream"></div>
-                  <div class="shake-fill"></div>
-                  <div class="cup-label">SS</div>
-                </div>
-              </div>
-
-              <div class="controls-panel" id="stationControls">
-                <div class="control-group">
-                  <span class="control-label">Cup size</span>
-                  <div class="option-row">
-                    <button class="option" type="button">S</button>
-                    <button class="option active" type="button">M</button>
-                    <button class="option" type="button">L</button>
-                  </div>
-                </div>
-
-                <div class="control-group">
-                  <span class="control-label">Base</span>
-                  <div class="option-grid">
-                    <button class="flavor vanilla active" type="button"><i></i>Vanilla</button>
-                    <button class="flavor chocolate" type="button"><i></i>Chocolate</button>
-                    <button class="flavor strawberry" type="button"><i></i>Strawberry</button>
-                  </div>
-                </div>
-
-                <button class="primary-action" type="button" id="nextButton">Send to Blend Station</button>
+            <div class="control-block">
+              <span>STIR</span>
+              <button id="stirButton" class="wide">HOLD TO STIR</button>
+              <div class="stir-meter"><i id="stirMeter"></i></div>
+            </div>
+            <div class="control-block">
+              <span>SYRUP</span>
+              <div>
+                <button data-syrup="chocolate">Chocolate</button>
+                <button data-syrup="strawberry">Strawberry</button>
+                <button data-syrup="caramel">Caramel</button>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      <aside class="customer-panel">
-        <span class="eyebrow">Customer</span>
-        <div class="customer-card">
-          <div class="customer-avatar" aria-hidden="true">
-            <span class="hair"></span>
-            <span class="face"></span>
+      <section class="station-view" id="view-finish">
+        <div class="finish-grid">
+          <div class="finish-card">
+            <h3>SHAKE TOPPINGS</h3>
+            <div class="topping-buttons">
+              <button data-topping="whipped">Whipped Cream</button>
+              <button data-topping="sprinkles">Sprinkles</button>
+              <button data-topping="cookie">Cookie Crumbs</button>
+              <button data-topping="strawberries">Strawberries</button>
+              <button data-topping="cherry">Cherry</button>
+            </div>
           </div>
-          <h3>Maya</h3>
-          <p>"Something strawberry, but not too sweet."</p>
-          <div class="patience">
-            <span>Patience</span>
-            <div><i></i></div>
+          <div class="finish-card">
+            <h3>CURRENT BUILD</h3>
+            <div id="buildSummary" class="build-summary">Select a ticket to start building.</div>
           </div>
         </div>
+      </section>
 
-        <div class="goal-card">
-          <span class="eyebrow">Shift goal</span>
-          <strong>$75.00</strong>
-          <div class="goal-bar"><i></i></div>
-          <small>$24.50 earned</small>
+      <section class="station-view" id="view-serve">
+        <div class="serve-area">
+          <div class="serve-ticket" id="serveTicket">Select an order ticket.</div>
+          <div class="tray">
+            <div class="tray-burger">BURGER</div>
+            <div class="tray-shake">SHAKE</div>
+          </div>
+          <button id="serveOrder" class="big-button">SERVE ORDER</button>
+          <div id="scoreResult" class="score-result"></div>
         </div>
-      </aside>
-    </main>
-  </div>
+      </section>
+    </section>
 
-  <script src="app.js"></script>
+    <aside class="queue-panel">
+      <div class="panel-title"><span>LOBBY</span><b id="queueCount">0</b></div>
+      <div id="queue" class="queue"></div>
+      <div class="day-goal">
+        <small>DAY GOAL</small>
+        <strong>$75.00</strong>
+        <div><i id="goalBar"></i></div>
+      </div>
+    </aside>
+  </main>
+</div>
+<script src="app.js"></script>
 </body>
 </html>

@@ -127,3 +127,112 @@ button{font:inherit}
 .day-goal i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--pink),var(--blue));transition:width .3s}
 @media(max-width:1050px){.layout{grid-template-columns:190px minmax(0,1fr)}.queue-panel{display:none}}
 @media(max-width:760px){.layout{display:block;overflow:auto}.tickets-panel{margin-bottom:10px}.stations{overflow:auto}.scene-header p{display:none}.build-counter,.shake-workbench,.finish-grid{grid-template-columns:1fr}.topbar{padding:0 12px}.shift{display:none}}
+
+
+/* --- Lobby + character polish --- */
+.restaurant-scene{
+  background:
+    linear-gradient(#cfeefa 0 20%,#fff3dc 20% 72%,#c9885c 72% 75%,#e7c6aa 75%);
+}
+.ceiling-lights{position:absolute;left:20%;right:20%;top:0;height:34px;display:flex;justify-content:space-around;z-index:2}
+.ceiling-lights i{width:70px;height:13px;background:#fff6c5;border:3px solid #6d5963;border-top:0;border-radius:0 0 12px 12px;box-shadow:0 5px 15px #ffe79f88}
+.window{overflow:hidden}
+.window:before{content:"";position:absolute;left:0;right:0;bottom:0;height:32%;background:#8fc987}
+.window-cloud{position:absolute;width:46px;height:18px;border-radius:20px;background:#fff;opacity:.82}
+.window-cloud:before,.window-cloud:after{content:"";position:absolute;border-radius:50%;background:inherit}
+.window-cloud:before{width:22px;height:22px;left:8px;top:-9px}
+.window-cloud:after{width:28px;height:28px;right:5px;top:-13px}
+.window-cloud.one{left:15%;top:22%}.window-cloud.two{right:12%;top:38%;transform:scale(.7)}
+.open-sign{position:absolute;left:9%;top:31%;z-index:3;padding:5px 10px;border:3px solid #fff;background:#ed5b94;color:#fff;font-size:10px;font-weight:900;letter-spacing:1px;box-shadow:0 0 0 2px #bd4676}
+.booth{position:absolute;right:3.5%;bottom:27%;width:150px;height:68px;z-index:1}
+.booth:before{content:"";position:absolute;left:0;right:0;bottom:0;height:38px;border-radius:12px 12px 5px 5px;background:#ef9bbb;border:3px solid #af6482}
+.booth i{position:absolute;bottom:0;width:8px;height:30px;background:#76534a}
+.booth i:first-child{left:18px}.booth i:last-child{right:18px}
+.plant{position:absolute;right:23%;bottom:27%;width:48px;height:80px;z-index:1}
+.plant:after{content:"";position:absolute;bottom:0;left:10px;width:30px;height:28px;background:#bc7454;border-radius:4px 4px 12px 12px;border:2px solid #87513d}
+.plant i,.plant i:before,.plant i:after{position:absolute;content:"";width:22px;height:48px;background:#6cab62;border-radius:100% 0 100% 0}
+.plant i{left:13px;bottom:23px;transform:rotate(-18deg)}
+.plant i:before{left:13px;top:3px;transform:rotate(42deg)}
+.plant i:after{left:-11px;top:8px;transform:rotate(-42deg)}
+.door span{position:absolute;right:7px;top:48%;width:7px;height:7px;border-radius:50%;background:#f3cf67;border:1px solid #866844}
+
+.customer{--skin:#efbd99;--hair:#5a3c35;--shirt:#71c8e8;--eye:#3e2d2e}
+.customer .head{background:var(--skin);border-color:#704d40}
+.customer .hair{position:absolute;z-index:4;background:var(--hair)}
+.customer.hair-1 .hair{left:-8px;right:-8px;top:-10px;height:38px;border-radius:50% 50% 34% 34%}
+.customer.hair-2 .hair{left:-5px;right:-5px;top:-8px;height:54px;border-radius:50% 50% 22% 22%;clip-path:polygon(0 0,100% 0,100% 55%,82% 38%,72% 78%,56% 44%,42% 75%,29% 40%,0 58%)}
+.customer.hair-3 .hair{left:4px;right:4px;top:-13px;height:32px;border-radius:55% 55% 30% 30%;box-shadow:-8px 10px 0 -2px var(--hair),8px 9px 0 -2px var(--hair)}
+.customer.hair-4 .hair{left:-10px;right:-10px;top:-15px;height:48px;border-radius:45%;background:repeating-radial-gradient(circle at 8px 8px,var(--hair) 0 6px,#0000 7px 12px),var(--hair)}
+.customer .eye{position:absolute;z-index:5;top:32px;width:7px;height:9px;border-radius:50%;background:var(--eye)}
+.customer .eye-left{left:16px}.customer .eye-right{right:16px}
+.customer .eye:after{content:"";position:absolute;width:2px;height:2px;border-radius:50%;background:#fff;left:1px;top:1px}
+.customer .mouth{position:absolute;z-index:5;left:26px;top:52px;width:12px;height:6px;border-bottom:2px solid #9b5e59;border-radius:0 0 12px 12px}
+.customer .body{background:var(--shirt);border-color:color-mix(in srgb,var(--shirt),#333 35%)}
+.customer.walk-in{animation:customerBob .7s ease both}
+@keyframes customerBob{0%{transform:translateY(3px)}45%{transform:translateY(-5px)}100%{transform:none}}
+
+.lobby-waiting{position:absolute;left:56%;right:2%;bottom:27%;height:105px;display:flex;align-items:flex-end;gap:10px;z-index:2;pointer-events:none}
+.waiting-sprite{--skin:#efbd99;--hair:#5a3c35;--shirt:#71c8e8;width:48px;height:88px;position:relative;filter:drop-shadow(0 3px 0 #0002)}
+.waiting-sprite .w-head{position:absolute;top:0;left:11px;width:28px;height:32px;border-radius:45%;background:var(--skin);border:2px solid #69493f}
+.waiting-sprite .w-hair{position:absolute;left:7px;right:7px;top:-5px;height:15px;background:var(--hair);border-radius:50% 50% 30% 30%}
+.waiting-sprite .w-eye{position:absolute;top:13px;width:3px;height:4px;border-radius:50%;background:#382a2c}
+.waiting-sprite .w-eye.l{left:7px}.waiting-sprite .w-eye.r{right:7px}
+.waiting-sprite .w-body{position:absolute;left:5px;right:5px;bottom:0;height:59px;border-radius:15px 15px 4px 4px;background:var(--shirt);border:2px solid #4d7183}
+.queue-person{position:relative;min-height:46px}
+.mini-avatar{--skin:#efbd99;--hair:#5a3c35;--shirt:#71c8e8;width:34px;height:38px;position:relative;flex:0 0 34px}
+.mini-avatar .m-head{position:absolute;left:8px;top:0;width:22px;height:23px;border-radius:45%;background:var(--skin);border:2px solid #6f4c42}
+.mini-avatar .m-hair{position:absolute;left:5px;right:5px;top:-3px;height:10px;border-radius:50% 50% 30% 30%;background:var(--hair)}
+.mini-avatar .m-body{position:absolute;left:4px;right:4px;bottom:0;height:19px;border-radius:8px 8px 3px 3px;background:var(--shirt)}
+
+/* --- Shake station: visible pouring, stirring, syrup and toppings --- */
+.shake-machine{overflow:hidden}
+.pour-rig{position:absolute;top:22px;left:50%;transform:translateX(-50%);width:210px;height:132px}
+.machine-face{height:82px;border-radius:18px;background:#77727a;border:6px solid #56515a;display:flex;align-items:center;justify-content:space-evenly;box-shadow:inset 0 -8px #5f5962}
+.machine-face i{width:26px;height:26px;border-radius:50%;background:#d7d3d8;border:4px solid #4d4850;box-shadow:inset 0 0 0 5px #9c969e}
+.nozzle{position:absolute;left:91px;top:77px;width:28px;height:58px;background:#5b5660;border-radius:0 0 9px 9px;border:4px solid #49444d;border-top:0}
+.pour-stream{position:absolute;left:101px;top:129px;width:8px;height:170px;border-radius:0 0 6px 6px;background:#f0dfae;transform:scaleY(0);transform-origin:top;opacity:0;z-index:4;filter:drop-shadow(0 0 3px #fff8)}
+.pour-stream.active{opacity:.9;transform:scaleY(1);animation:streamPulse .18s linear infinite alternate}
+@keyframes streamPulse{from{width:7px}to{width:11px;left:99px}}
+
+.shake-cup,.finish-cup{width:130px;height:190px;position:relative;border:5px solid #ffffffbb;border-top-width:8px;clip-path:polygon(0 0,100% 0,89% 100%,11% 100%);background:#ffffff2c;overflow:hidden}
+.shake-cup{z-index:5}
+.shake-cup.stirring{animation:shakeCup .085s linear infinite}
+@keyframes shakeCup{0%{transform:translate(-3px,1px) rotate(-1deg)}25%{transform:translate(3px,-1px) rotate(1deg)}50%{transform:translate(-2px,-2px) rotate(.5deg)}75%{transform:translate(2px,2px) rotate(-.5deg)}100%{transform:translate(-3px,1px) rotate(-1deg)}}
+.liquid{position:absolute;left:0;right:0;bottom:0;height:0;background:#f3dfad;transition:background .15s;z-index:1}
+.syrup-layer{position:absolute;left:8px;right:8px;bottom:0;height:0;z-index:2;opacity:.84;clip-path:polygon(0 0,100% 0,90% 100%,10% 100%);background:repeating-linear-gradient(110deg,#7a4c35 0 7px,#0000 7px 18px);transition:height .1s}
+.swirl{z-index:3}
+.topping-layer{position:absolute;left:8px;right:8px;top:0;bottom:0;z-index:6;pointer-events:none}
+.topping-layer span{position:absolute;display:block}
+.topping-whipped{left:31px!important;top:5px!important;width:62px;height:50px;border-radius:50% 50% 35% 35%;background:#fffaf1;box-shadow:0 -12px 0 -8px #fffaf1,0 -22px 0 -15px #fffaf1,0 3px 0 #e7d8d1}
+.topping-sprinkles{left:25px!important;top:6px!important;width:75px;height:48px;background:
+  radial-gradient(circle at 20% 30%,#ee5f86 0 2px,#0000 3px),
+  radial-gradient(circle at 45% 20%,#60bfe2 0 2px,#0000 3px),
+  radial-gradient(circle at 70% 42%,#f5c94e 0 2px,#0000 3px),
+  radial-gradient(circle at 38% 65%,#905fce 0 2px,#0000 3px),
+  radial-gradient(circle at 82% 68%,#ea6c59 0 2px,#0000 3px)}
+.topping-cookie{left:27px!important;top:11px!important;width:70px;height:36px;background:
+  radial-gradient(circle at 15% 20%,#6b4631 0 3px,#0000 4px),
+  radial-gradient(circle at 34% 55%,#7d5238 0 3px,#0000 4px),
+  radial-gradient(circle at 60% 25%,#6b4631 0 3px,#0000 4px),
+  radial-gradient(circle at 80% 65%,#7d5238 0 3px,#0000 4px)}
+.topping-strawberries{left:24px!important;top:3px!important;width:78px;height:48px;background:
+  radial-gradient(ellipse at 18% 50%,#e94d5d 0 7px,#0000 8px),
+  radial-gradient(ellipse at 50% 22%,#ee5d67 0 7px,#0000 8px),
+  radial-gradient(ellipse at 78% 55%,#d94451 0 7px,#0000 8px)}
+.topping-cherry{left:54px!important;top:-6px!important;width:20px;height:20px;border-radius:50%;background:#d72f45;box-shadow:inset -4px -3px #a71f32}
+.topping-cherry:after{content:"";position:absolute;width:12px;height:18px;border-left:2px solid #5c7337;left:12px;top:-12px;transform:rotate(28deg)}
+
+.shake-controls button.holding{background:#fff0f6;border-color:var(--pink);box-shadow:inset 0 0 0 2px #ef6fa933}
+.action-meter{height:8px!important;display:block!important;background:#eee2e8;border-radius:99px;overflow:hidden;margin-top:8px}
+.action-meter i{display:block;width:0;height:100%;background:linear-gradient(90deg,#f4c76b,var(--pink));transition:width .06s linear}
+.syrup-meter i{background:linear-gradient(90deg,#bb7a47,#7c4c38)}
+.finish-preview{height:235px;border-radius:12px;background:linear-gradient(#d9f0f8 0 62%,#e2ccd5 62% 65%,#f7eef2 65%);display:grid;place-items:center;margin-bottom:12px;border:1px solid var(--line)}
+.finish-cup{transform:scale(.92)}
+.toppings-card{display:flex;flex-direction:column}
+.topping-buttons{grid-template-columns:repeat(2,1fr)}
+.topping-buttons button:last-child{grid-column:1/-1}
+
+@media(max-width:760px){
+  .booth,.plant,.lobby-waiting{display:none}
+  .customer.walk-in{left:15%}
+}

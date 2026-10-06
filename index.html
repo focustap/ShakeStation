@@ -14,7 +14,13 @@
     <div class="stats">
       <div><small>CASH</small><b id="cash">$0.00</b></div>
       <div><small>SERVED</small><b id="served">0</b></div>
-      <button class="menu" aria-label="Menu"><i></i><i></i><i></i></button>
+      <div class="menu-wrap">
+        <button class="menu" id="menuButton" aria-label="Menu" aria-expanded="false"><i></i><i></i><i></i></button>
+        <div class="game-menu" id="gameMenu" hidden>
+          <div class="game-menu-title">ShakeStation</div>
+          <div class="game-menu-row"><span>Build</span><b id="buildId">2538</b></div>
+        </div>
+      </div>
     </div>
   </header>
 

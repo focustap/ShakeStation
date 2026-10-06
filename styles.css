@@ -265,3 +265,40 @@ button{font:inherit}
 .finish-cup.size-s{transform:scale(.76)}
 .finish-cup.size-m{transform:scale(.92)}
 .finish-cup.size-l{transform:scale(1.05)}
+
+
+/* --- Top-right game menu --- */
+.menu-wrap{position:relative}
+.menu{cursor:pointer}
+.game-menu{
+  position:absolute;
+  right:0;
+  top:48px;
+  width:190px;
+  padding:10px;
+  border:1px solid var(--line);
+  border-radius:12px;
+  background:#fffafb;
+  box-shadow:0 14px 32px rgba(48,36,46,.18);
+  z-index:100;
+}
+.game-menu[hidden]{display:none}
+.game-menu-title{
+  padding:4px 6px 10px;
+  font-size:13px;
+  font-weight:900;
+  border-bottom:1px solid #eadde4;
+}
+.game-menu-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:10px 6px 4px;
+  font-size:11px;
+  color:var(--muted);
+}
+.game-menu-row b{
+  color:var(--ink);
+  font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:.08em;
+}

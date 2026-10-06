@@ -366,7 +366,7 @@ function stopHold(){
   updateBuildSummary();
 }
 
-$("[data-size]").forEach(btn=>{
+$$("[data-size]").forEach(btn=>{
   btn.addEventListener("click",()=>{
     const build=getBuild(); if(!build)return;
     build.shake.size=btn.dataset.size;
@@ -376,7 +376,7 @@ $("[data-size]").forEach(btn=>{
   });
 });
 
-$("[data-base]").forEach(btn=>{
+$$("[data-base]").forEach(btn=>{
   btn.addEventListener("pointerdown",e=>{e.preventDefault();beginHold("base",btn.dataset.base,btn)});
 });
 $$("[data-syrup]").forEach(btn=>{
@@ -428,7 +428,7 @@ function renderShakeVisual(){
     $("#syrupMeter").style.width="0";
     $("#shakeCup").classList.remove("size-s","size-m","size-l");
     $("#finishCup").classList.remove("size-s","size-m","size-l");
-    $("[data-size]").forEach(btn=>btn.classList.remove("active"));
+    $$("[data-size]").forEach(btn=>btn.classList.remove("active"));
     toppingNodes(mainTops,[]);
     toppingNodes(finishTops,[]);
     return;
@@ -442,7 +442,7 @@ function renderShakeVisual(){
     $("#shakeCup").classList.add(cls);
     $("#finishCup").classList.add(cls);
   }
-  $("[data-size]").forEach(btn=>btn.classList.toggle("active",btn.dataset.size===s.size));
+  $$("[data-size]").forEach(btn=>btn.classList.toggle("active",btn.dataset.size===s.size));
   const liquidHeight=Math.round(s.baseAmount*.78);
   [mainLiquid,finishLiquid].forEach(x=>{
     x.style.height=liquidHeight+"%";

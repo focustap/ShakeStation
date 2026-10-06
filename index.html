@@ -137,6 +137,15 @@
 
           <div class="shake-controls">
             <div class="control-block">
+              <span>CUP SIZE</span>
+              <div class="size-options">
+                <button data-size="S">Small</button>
+                <button data-size="M">Medium</button>
+                <button data-size="L">Large</button>
+              </div>
+            </div>
+
+            <div class="control-block">
               <span>POUR BASE · HOLD</span>
               <div>
                 <button data-base="vanilla">Vanilla</button>
@@ -170,7 +179,7 @@
           <div class="finish-card toppings-card">
             <h3>SHAKE TOPPINGS</h3>
             <div class="finish-preview">
-              <div class="finish-cup">
+              <div id="finishCup" class="finish-cup">
                 <div id="finishLiquid" class="liquid"></div>
                 <div id="finishSyrup" class="syrup-layer"></div>
                 <div id="finishToppings" class="topping-layer"></div>

@@ -135,7 +135,7 @@ function blankBuild(){
   return{
     burger:[],
     pattyQuality:null,
-    shake:{base:null,baseAmount:0,stir:0,syrup:null,syrupAmount:0,toppings:[]}
+    shake:{size:null,base:null,baseAmount:0,stir:0,syrup:null,syrupAmount:0,toppings:[]}
   };
 }
 
@@ -326,6 +326,10 @@ const syrupColors={
 
 function beginHold(kind,value,button){
   const build=getBuild(); if(!build)return;
+  if(!build.shake.size){
+    $("#stationHelp").textContent="Choose a cup size before pouring the shake.";
+    return;
+  }
   stopHold();
   button.classList.add("holding");
   if(kind==="base"){
@@ -338,11 +342,12 @@ function beginHold(kind,value,button){
     build.shake.syrup=value;
     startLoop("syrup");
   }
+  const pourRates={S:3.0,M:2.1,L:1.55};
   activeHold={kind,value,button,timer:setInterval(()=>{
     const b=getBuild(); if(!b)return;
     if(kind==="base"){
       b.shake.base=value;
-      b.shake.baseAmount=Math.min(100,b.shake.baseAmount+2.1);
+      b.shake.baseAmount=Math.min(100,b.shake.baseAmount+pourRates[b.shake.size]);
     }else{
       b.shake.syrup=value;
       b.shake.syrupAmount=Math.min(100,b.shake.syrupAmount+2.5);
@@ -361,7 +366,17 @@ function stopHold(){
   updateBuildSummary();
 }
 
-$$("[data-base]").forEach(btn=>{
+$("[data-size]").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    const build=getBuild(); if(!build)return;
+    build.shake.size=btn.dataset.size;
+    playSfx("pop");
+    renderShakeVisual();
+    updateBuildSummary();
+  });
+});
+
+$("[data-base]").forEach(btn=>{
   btn.addEventListener("pointerdown",e=>{e.preventDefault();beginHold("base",btn.dataset.base,btn)});
 });
 $$("[data-syrup]").forEach(btn=>{
@@ -411,12 +426,23 @@ function renderShakeVisual(){
     $("#pourMeter").style.width="0";
     $("#stirMeter").style.width="0";
     $("#syrupMeter").style.width="0";
+    $("#shakeCup").classList.remove("size-s","size-m","size-l");
+    $("#finishCup").classList.remove("size-s","size-m","size-l");
+    $("[data-size]").forEach(btn=>btn.classList.remove("active"));
     toppingNodes(mainTops,[]);
     toppingNodes(finishTops,[]);
     return;
   }
 
   const s=build.shake;
+  $("#shakeCup").classList.remove("size-s","size-m","size-l");
+  $("#finishCup").classList.remove("size-s","size-m","size-l");
+  if(s.size){
+    const cls="size-"+s.size.toLowerCase();
+    $("#shakeCup").classList.add(cls);
+    $("#finishCup").classList.add(cls);
+  }
+  $("[data-size]").forEach(btn=>btn.classList.toggle("active",btn.dataset.size===s.size));
   const liquidHeight=Math.round(s.baseAmount*.78);
   [mainLiquid,finishLiquid].forEach(x=>{
     x.style.height=liquidHeight+"%";
@@ -460,7 +486,7 @@ function updateBuildSummary(){
   }
   const burger=build.burger.length?build.burger.map(cap).join(" → "):"Not built";
   const s=build.shake;
-  const shake=s.base?`${cap(s.base)} · fill ${Math.round(s.baseAmount)}% · stir ${Math.round(s.stir)}% · ${s.syrup?cap(s.syrup)+" syrup "+Math.round(s.syrupAmount)+"%":"no syrup"} · ${s.toppings.length?s.toppings.map(cap).join(", "):"no toppings"}`:"Not built";
+  const shake=s.base?((s.size||"No size")+" · "+cap(s.base)+" · fill "+Math.round(s.baseAmount)+"% · stir "+Math.round(s.stir)+"% · "+(s.syrup?cap(s.syrup)+" syrup "+Math.round(s.syrupAmount)+"%":"no syrup")+" · "+(s.toppings.length?s.toppings.map(cap).join(", "):"no toppings")):(s.size?s.size+" cup selected":"Not built");
   $("#buildSummary").textContent=`BURGER\n${burger}\n\nPATTY\n${build.pattyQuality||"Not cooked"}\n\nSHAKE\n${shake}`;
   $("#serveTicket").textContent=`#${String(o.id).padStart(2,"0")} · ${o.name}\n${ticketLines(o)}`;
   renderBurger();
@@ -476,7 +502,8 @@ function scoreOrder(o,b){
     points=Math.max(0,points-extras*.35);
   }
   if(o.shake){
-    total+=6+o.shake.toppings.length;
+    total+=7+o.shake.toppings.length;
+    if(b.shake.size===o.shake.size)points++;
     if(b.shake.base===o.shake.base)points++;
     if(b.shake.baseAmount>=65&&b.shake.baseAmount<=100)points++;
     if(b.shake.stir>=55&&b.shake.stir<=100)points++;

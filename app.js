@@ -135,6 +135,7 @@ function blankBuild(){
   return{
     burger:[],
     pattyQuality:null,
+    pattyScore:null,
     shake:{size:null,base:null,baseAmount:0,stir:0,syrup:null,syrupAmount:0,toppings:[]}
   };
 }
@@ -263,10 +264,19 @@ const slots=$$(".patty-slot");
 function pattyState(el){
   const start=Number(el.dataset.start||0);
   if(!start)return;
+
   const secs=(Date.now()-start)/1000;
+  const progress=Math.min(100,(secs/14)*100);
+  const marker=el.querySelector(".cook-marker");
+  const label=el.querySelector(".patty-label");
+
+  marker.style.left=progress+"%";
   el.classList.toggle("good",secs>=6&&secs<11);
   el.classList.toggle("burnt",secs>=11);
-  el.querySelector("span").textContent=secs>=11?"BURNT":secs>=6?"GOOD":Math.ceil(secs)+"s";
+
+  if(secs>=11) label.textContent="BURNT";
+  else if(secs>=6) label.textContent="READY";
+  else label.textContent="COOKING";
 }
 setInterval(()=>slots.forEach(pattyState),250);
 
@@ -275,14 +285,18 @@ slots.forEach(el=>el.addEventListener("click",()=>{
   if(!el.dataset.start){
     el.dataset.start=Date.now();
     el.classList.add("cooking");
-    el.querySelector("span").textContent="1s";
+    el.querySelector(".patty-label").textContent="COOKING";
+    el.querySelector(".cook-marker").style.left="0%";
     playSfx("grill");
   }else{
     const secs=(Date.now()-Number(el.dataset.start))/1000;
-    build.pattyQuality=secs<6?"raw":secs<11?"good":"burnt";
+    const distance=Math.abs(secs-8.5);
+    build.pattyScore=Math.max(0,Math.round(100-(distance*18)));
+    build.pattyQuality=secs<6?"undercooked":secs<11?"good":"burnt";
     el.dataset.start="";
     el.className="patty-slot";
-    el.querySelector("span").textContent="+";
+    el.querySelector(".patty-label").textContent="+";
+    el.querySelector(".cook-marker").style.left="0%";
     playSfx("pop");
     updateBuildSummary();
     setStation("burger");
@@ -487,7 +501,8 @@ function updateBuildSummary(){
   const burger=build.burger.length?build.burger.map(cap).join(" → "):"Not built";
   const s=build.shake;
   const shake=s.base?((s.size||"No size")+" · "+cap(s.base)+" · fill "+Math.round(s.baseAmount)+"% · stir "+Math.round(s.stir)+"% · "+(s.syrup?cap(s.syrup)+" syrup "+Math.round(s.syrupAmount)+"%":"no syrup")+" · "+(s.toppings.length?s.toppings.map(cap).join(", "):"no toppings")):(s.size?s.size+" cup selected":"Not built");
-  $("#buildSummary").textContent=`BURGER\n${burger}\n\nPATTY\n${build.pattyQuality||"Not cooked"}\n\nSHAKE\n${shake}`;
+  const pattyText=build.pattyQuality ? cap(build.pattyQuality)+" · "+(build.pattyScore??0)+"% cook" : "Not cooked";
+  $("#buildSummary").textContent=`BURGER\n${burger}\n\nPATTY\n${pattyText}\n\nSHAKE\n${shake}`;
   $("#serveTicket").textContent=`#${String(o.id).padStart(2,"0")} · ${o.name}\n${ticketLines(o)}`;
   renderBurger();
 }
@@ -495,7 +510,8 @@ function updateBuildSummary(){
 function scoreOrder(o,b){
   let points=0,total=0;
   if(o.burger){
-    total+=1;if(b.pattyQuality==="good")points++;
+    total+=1;
+    points+=(b.pattyScore||0)/100;
     const wanted=["patty",...o.burger.toppings,"topbun"];
     wanted.forEach(x=>{total++;if(b.burger.includes(x))points++});
     const extras=b.burger.filter(x=>!wanted.includes(x)).length;

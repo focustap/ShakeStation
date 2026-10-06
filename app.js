@@ -570,7 +570,7 @@ if(buildId){
   fetch("https://api.github.com/repos/focustap/ShakeStation/commits/main",{headers:{"Accept":"application/vnd.github+json"}})
     .then(r=>r.ok?r.json():Promise.reject())
     .then(data=>{
-      if(data&&data.sha) buildId.textContent=data.sha.slice(-4);
+      if(data&&data.sha) buildId.textContent=data.sha.slice(0,4);
     })
     .catch(()=>{});
 }

@@ -302,3 +302,81 @@ button{font:inherit}
   font-family:ui-monospace,SFMono-Regular,Consolas,monospace;
   letter-spacing:.08em;
 }
+
+
+/* --- Grill timing bar --- */
+.patty-slot{
+  overflow:visible;
+  display:grid;
+  place-items:center;
+}
+.patty-label{
+  position:relative;
+  z-index:3;
+  font-size:13px;
+  font-weight:900;
+  letter-spacing:.04em;
+  color:#fff7ef;
+  text-shadow:0 2px 0 rgba(0,0,0,.18);
+}
+.patty-slot:not(.cooking) .patty-label{
+  font-size:28px;
+  color:#c0aaa2;
+  text-shadow:none;
+}
+.cook-bar{
+  position:absolute;
+  left:4px;
+  right:4px;
+  bottom:-28px;
+  height:14px;
+  border-radius:999px;
+  border:3px solid #3d3333;
+  background:
+    linear-gradient(90deg,
+      #e5b84b 0%,
+      #e9ca55 28%,
+      #79b85f 40%,
+      #4f9d53 52%,
+      #79b85f 64%,
+      #df9a43 76%,
+      #cf4e47 88%,
+      #9f302f 100%);
+  box-shadow:0 3px 0 rgba(0,0,0,.25);
+  opacity:0;
+  transition:opacity .12s;
+  pointer-events:none;
+}
+.patty-slot.cooking .cook-bar{opacity:1}
+.cook-marker{
+  position:absolute;
+  top:-7px;
+  left:0%;
+  width:4px;
+  height:22px;
+  border-radius:3px;
+  background:#fff;
+  box-shadow:0 0 0 2px rgba(45,35,35,.75),0 1px 5px rgba(0,0,0,.4);
+  transform:translateX(-50%);
+}
+.patty-slot.cooking{
+  background:#9b5c37;
+  border-style:solid;
+  color:white;
+}
+.patty-slot.good{
+  background:#754128;
+}
+.patty-slot.burnt{
+  background:#2d1d19;
+  color:#ffd0c8;
+}
+.grill{
+  padding-bottom:48px;
+}
+.grill-legend{
+  gap:14px;
+}
+.grill-legend span{
+  text-align:center;
+}

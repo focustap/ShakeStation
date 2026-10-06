@@ -544,3 +544,33 @@ renderQueue();
 renderShakeVisual();
 setTimeout(spawnCustomer,700);
 setInterval(()=>{if(!currentCustomer&&orders.length<4)spawnCustomer()},18000);
+
+
+const menuButton=$("#menuButton");
+const gameMenu=$("#gameMenu");
+const buildId=$("#buildId");
+
+if(menuButton&&gameMenu){
+  menuButton.addEventListener("click",e=>{
+    e.stopPropagation();
+    const open=gameMenu.hasAttribute("hidden");
+    if(open) gameMenu.removeAttribute("hidden"); else gameMenu.setAttribute("hidden","");
+    menuButton.setAttribute("aria-expanded",String(open));
+  });
+
+  document.addEventListener("click",e=>{
+    if(!gameMenu.hasAttribute("hidden")&&!gameMenu.contains(e.target)&&e.target!==menuButton){
+      gameMenu.setAttribute("hidden","");
+      menuButton.setAttribute("aria-expanded","false");
+    }
+  });
+}
+
+if(buildId){
+  fetch("https://api.github.com/repos/focustap/ShakeStation/commits/main",{headers:{"Accept":"application/vnd.github+json"}})
+    .then(r=>r.ok?r.json():Promise.reject())
+    .then(data=>{
+      if(data&&data.sha) buildId.textContent=data.sha.slice(-4);
+    })
+    .catch(()=>{});
+}

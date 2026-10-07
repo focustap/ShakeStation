@@ -10,7 +10,7 @@
 <div class="game">
   <header class="topbar">
     <div class="logo">SHAKE<span>STATION</span></div>
-    <div class="shift">DAY 1 · MORNING SHIFT</div>
+    <div class="shift" id="shiftLabel">DAY 1 · MORNING SHIFT</div>
     <div class="stats">
       <div><small>CASH</small><b id="cash">$0.00</b></div>
       <div><small>SERVED</small><b id="served">0</b></div>
@@ -231,8 +231,8 @@
         <div class="serve-area">
           <div class="serve-ticket" id="serveTicket">Select an order ticket.</div>
           <div class="tray">
-            <div class="tray-burger">BURGER</div>
-            <div class="tray-shake">SHAKE</div>
+            <div id="trayBurger" class="tray-burger">NO BURGER</div>
+            <div id="trayShake" class="tray-shake">NO SHAKE</div>
           </div>
           <button id="serveOrder" class="big-button" disabled>SERVE ORDER</button>
           <p id="serveHint" class="serve-hint" role="status">Pick an order ticket first.</p>
@@ -248,6 +248,7 @@
         <small>DAY GOAL</small>
         <strong>$75.00</strong>
         <div><i id="goalBar"></i></div>
+        <p id="goalMessage" class="goal-message">Keep serving to reach today's goal!</p>
       </div>
     </aside>
   </main>

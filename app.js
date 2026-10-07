@@ -32,6 +32,7 @@ const MAX_OPEN_ORDERS=4;
 const cookedPatties=[];
 let pendingIngredient=null;
 let pattySerial=0;
+let lastIngredientDrag=null;
 
 const $=s=>document.querySelector(s);
 const $$=s=>[...document.querySelectorAll(s)];
@@ -326,9 +327,12 @@ function renderCookedRack(){
       btn.className="rack-patty "+p.quality;
       btn.dataset.patty=String(p.id);
       btn.textContent=`🍔 ${p.quality.toUpperCase()} · ${p.score}%`;
-      btn.title="Drag onto the burger, or tap and then tap the burger";
+      btn.title="Click to add to this burger, or drag onto the bun";
       btn.addEventListener("pointerdown",ingredientPointerStart);
-      btn.addEventListener("click",()=>selectIngredient({type:"patty",pattyId:p.id}));
+      btn.addEventListener("click",()=>{
+        if(wasJustDragged(btn))return;
+        clickPlaceIngredient("patty",p.id);
+      });
       rack.appendChild(btn);
     });
   });
@@ -366,7 +370,28 @@ function selectIngredient(ingredient){
 function clearIngredient(){
   pendingIngredient=null;
   $$(".selected-ingredient").forEach(el=>el.classList.remove("selected-ingredient"));
-  $("#burgerHint").textContent="Drag ingredients onto the burger or tap an ingredient, then tap the bun.";
+  $("#burgerHint").textContent="Click an ingredient to add it, or drag it onto the bun.";
+}
+function wasJustDragged(source){
+  if(!lastIngredientDrag||lastIngredientDrag.source!==source)return false;
+  if(Date.now()-lastIngredientDrag.at>350){lastIngredientDrag=null;return false}
+  lastIngredientDrag=null;
+  return true;
+}
+function clickPlaceIngredient(type,pattyId=null){
+  if(placeIngredient(type,pattyId)){
+    clearIngredient();
+    return;
+  }
+  const order=orders.find(x=>x.id===selectedId),build=getBuild();
+  let help="Select a burger order before adding ingredients.";
+  if(order?.burger){
+    if(build?.burger.includes("topbun"))help="Burger is finished. Undo the top bun to make changes.";
+    else if(type==="patty"&&build?.burger.includes("patty"))help="This burger already has a patty.";
+    else if(type==="patty")help="Cook a patty on the GRILL first, then click to add it from the holding rack.";
+    else help="Ingredient could not be added.";
+  }
+  $("#burgerHint").textContent=help;
 }
 function ingredientPointerStart(e){
   if(e.button!==0)return;
@@ -388,9 +413,12 @@ function ingredientPointerStart(e){
     window.removeEventListener("pointercancel",finish);
     if(ghost){
       ghost.remove();
-      const drop=$("#burgerStack").getBoundingClientRect();
-      if(ev.clientX>=drop.left-45&&ev.clientX<=drop.right+45&&ev.clientY>=drop.top-45&&ev.clientY<=drop.bottom+45){
-        if(placeIngredient(ingredient.type,ingredient.pattyId??null))clearIngredient();
+      lastIngredientDrag={source,at:Date.now()};
+      if(ev.type!=="pointercancel"){
+        const drop=$("#burgerStack").getBoundingClientRect();
+        if(ev.clientX>=drop.left-45&&ev.clientX<=drop.right+45&&ev.clientY>=drop.top-45&&ev.clientY<=drop.bottom+45){
+          if(placeIngredient(ingredient.type,ingredient.pattyId??null))clearIngredient();
+        }
       }
     }
   }
@@ -460,13 +488,12 @@ function renderBurger(){
 }
 
 $$("[data-burger]").forEach(btn=>{
+  // Native button click also works with Enter/Space for keyboard players.
   btn.addEventListener("click",()=>{
-    selectIngredient({type:btn.dataset.burger});
+    if(wasJustDragged(btn))return;
+    clickPlaceIngredient(btn.dataset.burger);
   });
   btn.addEventListener("pointerdown",ingredientPointerStart);
-  btn.addEventListener("keydown",e=>{
-    if(e.key==="Enter"&&placeIngredient(btn.dataset.burger))clearIngredient();
-  });
 });
 $("#burgerStack").addEventListener("click",()=>{
   if(pendingIngredient&&placeIngredient(pendingIngredient.type,pendingIngredient.pattyId??null))clearIngredient();

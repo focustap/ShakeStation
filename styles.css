@@ -503,3 +503,146 @@ button{font:inherit}
  .station-modal{padding:16px;max-height:95vh}
  .modal-heading h2{font-size:21px}
 }
+
+/* ShakeStation tactile kitchen v3: objects instead of ingredient menus */
+#view-grill .grill-wrap{min-height:235px;height:56%}
+#view-grill .grill{isolation:isolate;min-height:230px}
+#view-grill .grill:before{pointer-events:none}
+#view-grill .patty-slot{pointer-events:auto;touch-action:manipulation;transition:background .18s,transform .12s;min-width:70px;min-height:70px;max-width:120px;width:min(25%,120px);aspect-ratio:1;height:auto}
+#view-grill .patty-slot:hover{transform:scale(1.045);border-color:#ffd08f}
+#view-grill .patty-slot:focus-visible{outline:4px solid #fff;outline-offset:5px}
+#view-grill .patty-slot:not(.cooking):before{content:"RAW PATTY";position:absolute;font-size:9px;letter-spacing:.06em;top:calc(50% + 19px);left:0;right:0;color:#ffd5a4}
+#view-grill .holding-panel{margin:14px 0 0}
+#view-grill .grill-legend{font-size:10px}
+.shake-workbench.workbench-v2{height:100%;min-height:480px;display:grid;grid-template-columns:minmax(330px,1.5fr) minmax(225px,.7fr);gap:14px}
+.shake-machine.interactive-shake{min-height:480px;overflow:hidden;background:linear-gradient(#cbebf7 0 66%,#dca5ae 66% 69%,#f7e8df 69% 100%);position:relative;box-shadow:inset 0 -5px 0 #deccd1}
+.interactive-shake:before{content:"";position:absolute;inset:0;background:radial-gradient(circle at 47% 50%,#ffffff77,transparent 45%);pointer-events:none}
+.prep-title{position:absolute;left:12px;right:12px;top:10px;font-size:13px;letter-spacing:.14em;font-weight:1000;color:#7a425c;display:flex;flex-wrap:wrap;gap:7px}
+.prep-title span{font-size:9px;letter-spacing:.04em;color:#936b76;margin-left:auto}
+.size-shelf{position:absolute;top:42px;left:15px;right:15px;height:54px;z-index:12;display:flex;align-items:center;gap:9px}
+.workbench-label{font-size:9px;letter-spacing:.06em;font-weight:900;color:#82516c;white-space:nowrap}
+.size-cup{position:relative;width:40px;height:46px;padding:0;border:0;background:none;cursor:pointer;color:#a64d7d;display:grid;place-items:center;font-weight:1000}
+.size-cup i{display:block;position:absolute;bottom:2px;height:28px;width:30px;clip-path:polygon(0 0,100% 0,80% 100%,20% 100%);background:#fff7f9;border:3px solid #ad6e8b}
+.size-cup.size-small i{transform:scale(.76);transform-origin:bottom center}
+.size-cup.size-large i{transform:scale(1.16);transform-origin:bottom center}
+.size-cup b{position:relative;z-index:1;margin-top:3px;font-size:13px}
+.size-cup.active{filter:drop-shadow(0 0 6px #d3448c);transform:translateY(-3px)}
+.interactive-shake .pour-rig{top:114px;z-index:7;width:220px}
+.interactive-shake .machine-face{height:91px;background:linear-gradient(#aea5aa,#6b6169);border:6px solid #574f59;border-radius:19px}
+.dispenser-taps{gap:5px;padding:8px;align-items:center}
+.dispenser-taps button{width:59px;height:62px;background:linear-gradient(#fffaf4,#e9dce0);border:3px solid #5d525b;border-radius:12px;cursor:pointer;display:flex;align-items:center;flex-direction:column;justify-content:space-around;touch-action:none;user-select:none;color:#54424a;box-shadow:0 4px 0 #4b4048}
+.dispenser-taps button i{width:24px;height:24px;border:4px solid #66575c;border-radius:50%;background:#f0dbaf;box-shadow:inset 0 -4px #d8b987}
+.dispenser-taps button.tap-chocolate i{background:#7b4d35}
+.dispenser-taps button.tap-strawberry i{background:#e98caa}
+.dispenser-taps button small{font-size:8px;font-weight:1000}
+.dispenser-taps button.holding{transform:translateY(4px);box-shadow:0 0 0 2px #ffcc80;background:#f9e2ad}
+.interactive-shake .nozzle{top:84px;left:97px;height:53px}
+.interactive-shake .pour-stream{left:107px;top:135px;pointer-events:none;z-index:8}
+.interactive-shake .shake-cup{position:absolute;bottom:58px;left:50%;margin-left:-65px;padding:0;z-index:9;box-shadow:inset 0 0 18px #fff6}
+.interactive-shake .shake-cup.hand-shaking{filter:drop-shadow(0 0 9px #9be2f1)}
+.interactive-shake .syrup-shelf{position:absolute;top:228px;right:8px;display:grid;grid-template-columns:repeat(3,39px);gap:6px;z-index:11;align-content:center}
+.syrup-shelf .workbench-label{grid-column:1/-1;text-align:center;font-size:8px;white-space:normal}
+.syrup-bottle{height:92px;border:0;background:transparent;display:flex;align-items:center;flex-direction:column;justify-content:flex-end;gap:6px;color:#69463f;font-size:8px;cursor:pointer;touch-action:none;user-select:none}
+.syrup-bottle i{width:29px;height:55px;border-radius:9px 9px 6px 6px;border:3px solid #fcebd9;transform:rotate(-3deg);background:linear-gradient(#89533b 0 20%,#5c321f 20%);box-shadow:0 0 0 2px #653b37;position:relative}
+.syrup-bottle i:before{content:"";position:absolute;top:-16px;left:8px;width:8px;height:13px;background:#674c40;border-radius:4px 4px 0 0}
+.syrup-bottle.strawberry i{background:linear-gradient(#f28da7,#bc426e);box-shadow:0 0 0 2px #a4405f}
+.syrup-bottle.caramel i{background:linear-gradient(#f2c16e,#c77b36);box-shadow:0 0 0 2px #a56a36}
+.syrup-bottle b{font-size:8px}
+.syrup-bottle.holding i{transform:rotate(-18deg) translateY(3px);filter:brightness(1.15)}
+.syrup-stream{position:absolute;left:64%;top:52%;width:7px;height:22%;background:#8f5437;z-index:10;border-radius:4px;opacity:0;pointer-events:none;transform:rotate(28deg) scaleY(.1);transform-origin:top;transition:opacity .12s}
+.syrup-stream.active{opacity:.9;transform:rotate(28deg) scaleY(1);animation:streamPulse .15s linear infinite alternate}
+.machine-footer{position:absolute;left:8px;right:8px;bottom:9px;text-align:center;font-size:9px;line-height:1.4;color:#7b5262;font-weight:900;letter-spacing:.04em}
+.shake-coach{display:flex;flex-direction:column;gap:10px;overflow:auto;padding:10px;background:#fff6f0;border:1px solid #ecd3ca;border-radius:14px}
+.coach-title{padding:8px 10px;background:#ffe7ef;border-radius:10px}
+.coach-title span{display:block;color:#bf739a;font-size:9px;letter-spacing:.1em;font-weight:900}
+.coach-title b{font-size:13px;color:#9b456b}
+.coach-step{display:flex;gap:11px;align-items:flex-start;padding:9px;border:1px solid #edd5da;border-radius:10px;background:white}
+.coach-step>b{min-width:26px;height:26px;display:grid;place-items:center;background:#f4cae0;border-radius:8px;font-size:12px}
+.coach-step>div{flex:1;min-width:0}
+.coach-step strong{font-size:11px;color:#6b354e}
+.coach-step p{font-size:10px;color:#947887;line-height:1.35;margin:3px 0 5px}
+.coach-step .action-meter,.coach-step .stir-meter{margin:6px 0 2px}
+.coach-step .mixer-button{border-radius:8px;background:linear-gradient(#f8dee8,#e8b5cc);border:2px solid #cb83a5;padding:8px;width:100%;margin-top:5px;font-size:9px;font-weight:900;cursor:pointer;touch-action:none}
+.coach-step .mixer-button.holding{background:#f7afcd;transform:translateY(2px)}
+.shake-coach #clearShake{margin-top:auto;font-size:10px;padding:10px;border:1px dashed #d9a5b6;border-radius:8px}
+.finish-grid.finish-workbench-v2{grid-template-columns:minmax(0,1.45fr) minmax(210px,.75fr);gap:14px;height:100%}
+.finish-workbench-v2 .toppings-card{min-height:0;display:flex;flex-direction:column}
+.finish-heading{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center}
+.finish-heading span{font-size:9px;letter-spacing:.07em;color:#ac6288;font-weight:900}
+.finish-workbench-v2 .finish-preview{height:auto;flex:1;min-height:220px;position:relative;background:linear-gradient(135deg,#d3f1fc 0 54%,#facad8 55% 59%,#fff3f0 59%);overflow:hidden}
+.finish-stage-label{position:absolute;left:12px;top:11px;font-size:9px;letter-spacing:.18em;color:#985470;font-weight:900}
+.finish-workbench-v2 .finish-cup{transform:scale(1.22);transform-origin:center;cursor:crosshair;touch-action:manipulation;transition:filter .18s, transform .2s}
+.finish-workbench-v2 .finish-cup.placing{transform:scale(1.26) rotate(-2deg);filter:drop-shadow(0 0 14px #f2a1c6)}
+.finish-splash{position:absolute;bottom:6%;left:20%;right:20%;height:10px;border-radius:100%;background:#7b526422;pointer-events:none}
+.topping-counter{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:9px;padding:12px;background:linear-gradient(#f8e0d4,#f1c7d3);border:2px solid #e2b7c4;border-radius:14px}
+.topping-bowl{width:83px;height:82px;background:radial-gradient(ellipse at 50% 40%,#f8eeee 0 37%,#d39aa9 39% 49%,#a66c7c 51% 57%,transparent 59%);border:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:grab;color:#593b49;touch-action:none}
+.topping-bowl span{font-size:29px;filter:drop-shadow(0 2px 1px #0003)}
+.topping-bowl b{font-size:8px;padding:3px 5px;background:#fff8;border-radius:8px}
+.topping-bowl:hover,.topping-bowl.selected-ingredient{filter:drop-shadow(0 0 6px #f09dc7);transform:translateY(-2px)}
+.finish-workbench-v2 .topping-tip{background:#fff2f8;border-radius:8px;padding:8px;color:#854b6b;margin:7px 0 0}
+.order-clipboard{background:repeating-linear-gradient(#fffaf1 0 25px,#e7e5db 26px);border-top:10px solid #bf8d75;overflow:auto}
+.order-clipboard h3{font-size:12px;color:#8f543d}
+.order-clipboard .build-summary{font-family:ui-monospace,Consolas,monospace;line-height:1.75;color:#503f40;white-space:pre-wrap}
+.clipboard-note{margin-top:15px;font-size:11px;color:#917574;font-style:italic;line-height:1.5}
+@media(max-width:1050px){
+ .shake-workbench.workbench-v2{grid-template-columns:minmax(320px,1fr) minmax(180px,.7fr)}
+ .interactive-shake .syrup-shelf{right:3px}
+ .finish-grid.finish-workbench-v2{grid-template-columns:minmax(0,1fr) minmax(185px,.7fr)}
+}
+@media(max-width:700px){
+ .shake-workbench.workbench-v2,.finish-grid.finish-workbench-v2{display:flex;flex-direction:column;height:auto}
+ .shake-machine.interactive-shake{min-height:525px;flex:none}
+ .shake-coach{flex:none;overflow:visible}
+ .finish-workbench-v2 .finish-preview{height:290px;flex:none}
+ #view-shake,#view-finish{overflow:auto}
+ #view-grill .grill-wrap{grid-template-columns:1fr 57px}
+ .grill-legend{font-size:8px}
+ .shop-button{padding:8px}
+}
+
+/* Player-controlled topping positions, recorded per order when physically dropped */
+.topping-layer .topping-whipped{left:var(--topping-x,31px)!important;top:var(--topping-y,5px)!important}
+.topping-layer .topping-sprinkles{left:var(--topping-x,25px)!important;top:var(--topping-y,6px)!important}
+.topping-layer .topping-cookie{left:var(--topping-x,27px)!important;top:var(--topping-y,11px)!important}
+.topping-layer .topping-strawberries{left:var(--topping-x,24px)!important;top:var(--topping-y,3px)!important}
+.topping-layer .topping-cherry{left:var(--topping-x,54px)!important;top:var(--topping-y,-6px)!important}
+.finish-workbench-v2 .topping-layer span{filter:drop-shadow(0 2px 1px #fff6)}
+@media(prefers-reduced-motion:reduce){
+ .shake-cup.stirring,.shake-cup.hand-shaking,.syrup-stream.active,.pour-stream.active{animation:none!important}
+ .size-cup,.topping-bowl,.finish-cup{transition:none!important}
+}
+
+/* Kitchen waste station — physical bin and independent discard actions */
+#view-grill{overflow:auto}
+#view-grill .grill{gap:6px}
+#view-grill .grill-position{position:relative;z-index:2;min-width:0;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:32px}
+#view-grill .grill-position .patty-slot{width:min(100%,112px);height:auto;aspect-ratio:1;max-width:112px;flex:none}
+#view-grill .grill-position .patty-slot:not(.cooking):before{content:"RAW PATTY"}
+#view-grill .discard-slot{border:2px solid #be715e;border-radius:8px;background:#3c2928;color:#fbd9c7;font-size:10px;font-weight:900;cursor:pointer;padding:6px 11px;white-space:nowrap;position:relative;z-index:3}
+#view-grill .discard-slot:hover,#view-grill .discard-slot:focus-visible{background:#a64035;color:white}
+#view-grill .grill-position .cook-bar{bottom:-21px}
+.trash-station{display:flex;align-items:center;gap:16px;background:#f9eae5;border:2px solid #dfb0a3;border-radius:13px;padding:11px 14px;margin-top:12px}
+.trash-bin{border:2px solid #704f4a;border-radius:14px;background:linear-gradient(#fffcf5,#eeddd9);display:flex;align-items:center;justify-content:center;gap:3px;flex-direction:column;min-width:110px;min-height:105px;padding:9px;cursor:pointer;color:#70403e;transition:transform .16s,border-color .16s,background .16s;touch-action:manipulation}
+.trash-bin-lid{display:block;width:48px;height:6px;background:#595057;border-radius:4px;box-shadow:0 2px 0 #342c31}
+.trash-bin-can{font-size:30px;display:block;line-height:1.3}
+.trash-bin b{font-size:11px;letter-spacing:.06em}
+.trash-bin small{font-size:9px;line-height:1.3;color:#88655e}
+.trash-bin:hover,.trash-bin.drop-highlight{border-color:#dc593b;background:#fff1e5;transform:translateY(-3px);box-shadow:0 0 0 3px #d7653d44}
+.waste-note{font-size:12px;color:#654b4c;font-weight:800;line-height:1.5}
+.waste-note p{font-size:10px;color:#947979;margin:6px 0 0;font-weight:400}
+.rack-entry{display:flex;align-items:stretch;gap:3px;border-radius:11px;background:#f6ded0;padding:4px;box-shadow:0 2px 0 #bda39b}
+.rack-entry .rack-patty{box-shadow:none;border-radius:8px 3px 3px 8px;padding:9px}
+.rack-discard{border:1px solid #a96252;border-radius:3px 8px 8px 3px;background:#8e4e43;color:white;font-size:9px;font-weight:900;cursor:pointer;min-width:42px}
+.rack-discard:hover{background:#c04335}
+.burger-trash-row{border-top:1px dashed #dcb6ac;display:flex;align-items:center;gap:14px;margin:12px 0 0;padding-top:8px}
+.burger-trash-row .trash-bin{min-height:88px;min-width:110px}
+.burger-trash-row p{font-size:11px;color:#85666b;line-height:1.4;margin:0}
+#view-burger{overflow:auto}
+@media(max-width:760px){
+ #view-grill .grill-position{gap:20px}
+ #view-grill .discard-slot{font-size:8px;padding:4px}
+ #view-grill .trash-station{gap:9px}
+ #view-grill .grill-position .patty-slot{width:min(100%,86px)}
+ .rack-entry{max-width:100%}
+ .burger-trash-row{flex-wrap:wrap}
+}

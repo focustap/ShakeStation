@@ -2,6 +2,7 @@
 (function(){
 const KEY="shakestation-shifts-v1";
 const goods=[
+{id:"pink",name:"Classic Pink",cost:0,icon:"🍓",detail:"Return to the original pink-and-cream diner.",kind:"theme"},
 {id:"mint",name:"Mint Makeover",cost:30,icon:"🎨",detail:"Mint and cream restaurant colors.",kind:"theme"},
 {id:"night",name:"Midnight Diner",cost:45,icon:"🌙",detail:"Cozy blue diner colors.",kind:"theme"},
 {id:"neon",name:"Neon Sign",cost:25,icon:"💡",detail:"A glowing sign by the window.",kind:"decor"},
@@ -49,13 +50,13 @@ function back(){shiftOpen?close():report()}
 function showShop(){
 show('<header class="modal-heading"><div><small>RESTAURANT SHOP</small><h2>Make ShakeStation yours</h2><p>Everything you buy stays saved on this browser.</p></div><button id="closeShop" aria-label="Close" class="modal-x">✕</button></header>'+
 '<div class="wallet">💵 BALANCE · $'+cash.toFixed(2)+'</div><div class="shop-grid">'+goods.map(g=>{
-const bought=owned.has(g.id),equip=g.kind==="theme"&&theme===g.id;
+const bought=owned.has(g.id)||g.id==="pink",equip=g.kind==="theme"&&theme===g.id;
 return '<article class="shop-item"><div class="shop-icon">'+g.icon+'</div><strong>'+g.name+'</strong><p>'+g.detail+'</p><button data-buy="'+g.id+'" '+(cash<g.cost&&!bought?"disabled":"")+'>'+(equip?"EQUIPPED":bought?(g.kind==="theme"?"EQUIP":"OWNED"):"BUY · $"+g.cost)+'</button></article>';
 }).join("")+'</div><footer class="modal-footer"><button id="exitShop">'+(shiftOpen?"BACK TO KITCHEN":"DAY REPORT")+'</button></footer>',"shop");
 $("#closeShop").addEventListener("click",back);$("#exitShop").addEventListener("click",back);
 overlay.querySelectorAll("[data-buy]").forEach(btn=>btn.addEventListener("click",()=>{
 const g=goods.find(x=>x.id===btn.dataset.buy);if(!g)return;
-if(!owned.has(g.id)){if(cash<g.cost)return;cash-=g.cost;owned.add(g.id);playSfx("ding")}
+if(!owned.has(g.id)&&g.id!=="pink"){if(cash<g.cost)return;cash-=g.cost;owned.add(g.id);playSfx("ding")}
 if(g.kind==="theme")theme=g.id;
 save();applyDecor();status();showShop();
 }));
@@ -96,7 +97,7 @@ rep=clamp(rep+delta,0,100);
 message=(good?"🌟 ":"⚠️ ")+(o.special==="critic"?"Critic":"Influencer")+" · "+score+"% · REP "+(delta>=0?"+":"")+delta+(bonus?" · +$"+bonus.toFixed(2):"");
 $("#scoreResult").textContent+=" · "+message;
 }
-if(owned.has("jukebox"))bonus+=Math.round(earned*.10*100)/100;
+if(owned.has("jukebox")){const tip=Math.round(earned*.10*100)/100;bonus+=tip;$("#scoreResult").textContent+=" · jukebox tip +$"+tip.toFixed(2)}
 cash+=bonus;dayRevenue+=earned+bonus;reviews.push({score,special:o.special,message});
 save();status();
 },
@@ -156,7 +157,7 @@ if(ghost){ghost.style.left=ev.clientX+"px";ghost.style.top=ev.clientY+"px"}
 function done(ev){
 window.removeEventListener("pointermove",move);window.removeEventListener("pointerup",done);window.removeEventListener("pointercancel",done);
 if(ghost){
-ghost.remove();skipTopClick=true;
+ghost.remove();skipTopClick=true;setTimeout(()=>{skipTopClick=false},0);
 for(const target of [$("#finishCup"),cup]){
 const r=target.getBoundingClientRect();
 if(ev.clientX>=r.left-15&&ev.clientX<=r.right+15&&ev.clientY>=r.top-15&&ev.clientY<=r.bottom+15){

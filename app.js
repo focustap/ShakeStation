@@ -750,7 +750,7 @@ $("#serveOrder").addEventListener("click",()=>{
   cash+=earned;served++;
   playSfx("ding");
   const rating=score>=95?"PERFECT!":score>=80?"GREAT JOB!":score>=60?"NICE TRY!":"NEEDS WORK!";
-  $("#scoreResult").textContent=`${rating} · ${score}% · +${earned.toFixed(2)}`;
+  $("#scoreResult").textContent=`${rating} · ${score}% · +$${earned.toFixed(2)}`;
   window.ShakeStationExpansion?.served(o,score,earned);
   delete builds[o.id];
   clearIngredient();

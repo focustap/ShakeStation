@@ -33,6 +33,7 @@ const cookedPatties=[];
 let pendingIngredient=null;
 let pattySerial=0;
 let lastIngredientDrag=null;
+let wasteCount=0;
 
 const $=s=>document.querySelector(s);
 const $$=s=>[...document.querySelectorAll(s)];
@@ -321,22 +322,93 @@ function renderCookedRack(){
       empty.textContent="No patties yet · cook some on the grill!";
       rack.appendChild(empty);
     }
-    cookedPatties.forEach((p,i)=>{
+    cookedPatties.forEach(p=>{
+      const entry=document.createElement("div");
+      entry.className="rack-entry";
       const btn=document.createElement("button");
       btn.type="button";
       btn.className="rack-patty "+p.quality;
       btn.dataset.patty=String(p.id);
       btn.textContent=`🍔 ${p.quality.toUpperCase()} · ${p.score}%`;
-      btn.title="Click to add to this burger, or drag onto the bun";
+      btn.title="Click to add to this burger, or drag onto the bun or trash";
       btn.addEventListener("pointerdown",ingredientPointerStart);
       btn.addEventListener("click",()=>{
         if(wasJustDragged(btn))return;
         clickPlaceIngredient("patty",p.id);
       });
-      rack.appendChild(btn);
+      const discard=document.createElement("button");
+      discard.type="button";
+      discard.className="rack-discard";
+      discard.textContent="✕ TOSS";
+      discard.title=`Throw away ${p.quality} patty`;
+      discard.setAttribute("aria-label",`Throw away ${p.quality} patty`);
+      discard.addEventListener("click",()=>discardRackPatty(p.id));
+      entry.appendChild(btn);
+      entry.appendChild(discard);
+      rack.appendChild(entry);
     });
   });
   $("#rackCount").textContent=`${cookedPatties.length}/${rackCapacity()}`;
+}
+function renderWasteCount(){
+  ["#grillWasteCount","#burgerWasteCount"].forEach(sel=>{
+    const element=$(sel);
+    if(element)element.textContent=String(wasteCount);
+  });
+}
+function markWaste(message){
+  wasteCount++;
+  renderWasteCount();
+  if(message)$("#stationHelp").textContent=message;
+  playSfx("pop");
+}
+function discardRackPatty(id){
+  const index=cookedPatties.findIndex(p=>p.id===id);
+  if(index<0)return false;
+  cookedPatties.splice(index,1);
+  markWaste("Patty tossed in the trash. The rack has room for another!");
+  renderCookedRack();
+  return true;
+}
+function resetGrillSpot(el){
+  el.dataset.start="";
+  el.classList.remove("cooking","good","burnt");
+  el.querySelector(".patty-label").textContent="+";
+  el.querySelector(".cook-marker").style.left="0%";
+}
+function discardGrillSpot(el){
+  if(!el||!el.dataset.start){
+    $("#stationHelp").textContent="That grill spot is empty. Start cooking a patty first!";
+    return false;
+  }
+  resetGrillSpot(el);
+  markWaste("That patty was thrown away before going onto the holding rack.");
+  return true;
+}
+function discardCurrentBurger(){
+  const b=getBuild();
+  const o=orders.find(x=>x.id===selectedId);
+  if(!o?.burger||!b){
+    $("#burgerHint").textContent="Choose a burger ticket before throwing anything away.";
+    return false;
+  }
+  if(!b.burger.length&&!b.pattyItem){
+    $("#burgerHint").textContent="Your burger is already empty.";
+    return false;
+  }
+  b.burger=[];
+  b.pattyItem=null;b.pattyQuality=null;b.pattyScore=null;
+  clearIngredient();
+  markWaste("Burger discarded. Start the order again with a fresh patty.");
+  renderBurger();renderTickets();updateBuildSummary();
+  return true;
+}
+function insideElement(event,element,padding=18){
+  if(!element||element.hidden)return false;
+  const rect=element.getBoundingClientRect();
+  if(rect.width===0||rect.height===0)return false;
+  return event.clientX>=rect.left-padding&&event.clientX<=rect.right+padding
+    &&event.clientY>=rect.top-padding&&event.clientY<=rect.bottom+padding;
 }
 function returnPatty(build){
   if(!build?.pattyItem)return;
@@ -415,8 +487,11 @@ function ingredientPointerStart(e){
       ghost.remove();
       lastIngredientDrag={source,at:Date.now()};
       if(ev.type!=="pointercancel"){
-        const drop=$("#burgerStack").getBoundingClientRect();
-        if(ev.clientX>=drop.left-45&&ev.clientX<=drop.right+45&&ev.clientY>=drop.top-45&&ev.clientY<=drop.bottom+45){
+        // Cooked patties can be dropped directly into the physical trash bin.
+        if(ingredient.type==="patty"&&(insideElement(ev,$("#grillTrash"))||insideElement(ev,$("#burgerTrash")))){
+          discardRackPatty(ingredient.pattyId);
+          clearIngredient();
+        }else if(insideElement(ev,$("#burgerStack"),45)){
           if(placeIngredient(ingredient.type,ingredient.pattyId??null))clearIngredient();
         }
       }
@@ -446,7 +521,36 @@ function pattyState(el){
 }
 setInterval(()=>slots.forEach(pattyState),250);
 
+// Drag a patty straight off the grill to the trash bin to discard it.
+slots.forEach(el=>el.addEventListener("pointerdown",event=>{
+  if(event.button!==0||!el.dataset.start)return;
+  const startX=event.clientX,startY=event.clientY;
+  let dragged=false;
+  function move(e){
+    if(Math.hypot(e.clientX-startX,e.clientY-startY)>12)dragged=true;
+    $("#grillTrash").classList.toggle("drop-highlight",dragged&&insideElement(e,$("#grillTrash"),35));
+  }
+  function finish(e){
+    window.removeEventListener("pointermove",move);
+    window.removeEventListener("pointerup",finish);
+    window.removeEventListener("pointercancel",finish);
+    $("#grillTrash").classList.remove("drop-highlight");
+    if(dragged){
+      lastIngredientDrag={source:el,at:Date.now()};
+      if(e.type!=="pointercancel"&&insideElement(e,$("#grillTrash"),35))discardGrillSpot(el);
+    }
+  }
+  window.addEventListener("pointermove",move);
+  window.addEventListener("pointerup",finish);
+  window.addEventListener("pointercancel",finish);
+}));
+$$("[data-discard-slot]").forEach(btn=>btn.addEventListener("click",()=>{
+  const el=slots.find(slot=>slot.dataset.slot===btn.dataset.discardSlot);
+  discardGrillSpot(el);
+}));
+$("#burgerTrash").addEventListener("click",discardCurrentBurger);
 slots.forEach(el=>el.addEventListener("click",()=>{
+  if(wasJustDragged(el))return;
   if(!el.dataset.start){
     // Cooking ahead is always allowed, including before the first ticket.
     if(cookedPatties.length>=rackCapacity()){
@@ -469,10 +573,7 @@ slots.forEach(el=>el.addEventListener("click",()=>{
     const score=Math.max(0,Math.round(100-(distance*18)));
     const quality=secs<6?"undercooked":secs<11?"good":"burnt";
     cookedPatties.push({id:++pattySerial,score,quality});
-    el.dataset.start="";
-    el.className="patty-slot";
-    el.querySelector(".patty-label").textContent="+";
-    el.querySelector(".cook-marker").style.left="0%";
+    resetGrillSpot(el);
     playSfx("pop");
     renderCookedRack();
     updateBuildSummary();renderTickets();
@@ -830,6 +931,7 @@ $("#serveOrder").addEventListener("click",()=>{
 renderTickets();
 renderQueue();
 renderCookedRack();
+renderWasteCount();
 renderShakeVisual();
 setTimeout(spawnCustomer,700);
 setInterval(()=>{if(!currentCustomer&&orders.length<MAX_OPEN_ORDERS)spawnCustomer()},18000);

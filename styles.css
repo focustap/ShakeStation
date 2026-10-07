@@ -611,3 +611,38 @@ button{font:inherit}
  .shake-cup.stirring,.shake-cup.hand-shaking,.syrup-stream.active,.pour-stream.active{animation:none!important}
  .size-cup,.topping-bowl,.finish-cup{transition:none!important}
 }
+
+/* Kitchen waste station — physical bin and independent discard actions */
+#view-grill{overflow:auto}
+#view-grill .grill{gap:6px}
+#view-grill .grill-position{position:relative;z-index:2;min-width:0;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:32px}
+#view-grill .grill-position .patty-slot{width:min(100%,112px);height:auto;aspect-ratio:1;max-width:112px;flex:none}
+#view-grill .grill-position .patty-slot:not(.cooking):before{content:"RAW PATTY"}
+#view-grill .discard-slot{border:2px solid #be715e;border-radius:8px;background:#3c2928;color:#fbd9c7;font-size:10px;font-weight:900;cursor:pointer;padding:6px 11px;white-space:nowrap;position:relative;z-index:3}
+#view-grill .discard-slot:hover,#view-grill .discard-slot:focus-visible{background:#a64035;color:white}
+#view-grill .grill-position .cook-bar{bottom:-21px}
+.trash-station{display:flex;align-items:center;gap:16px;background:#f9eae5;border:2px solid #dfb0a3;border-radius:13px;padding:11px 14px;margin-top:12px}
+.trash-bin{border:2px solid #704f4a;border-radius:14px;background:linear-gradient(#fffcf5,#eeddd9);display:flex;align-items:center;justify-content:center;gap:3px;flex-direction:column;min-width:110px;min-height:105px;padding:9px;cursor:pointer;color:#70403e;transition:transform .16s,border-color .16s,background .16s;touch-action:manipulation}
+.trash-bin-lid{display:block;width:48px;height:6px;background:#595057;border-radius:4px;box-shadow:0 2px 0 #342c31}
+.trash-bin-can{font-size:30px;display:block;line-height:1.3}
+.trash-bin b{font-size:11px;letter-spacing:.06em}
+.trash-bin small{font-size:9px;line-height:1.3;color:#88655e}
+.trash-bin:hover,.trash-bin.drop-highlight{border-color:#dc593b;background:#fff1e5;transform:translateY(-3px);box-shadow:0 0 0 3px #d7653d44}
+.waste-note{font-size:12px;color:#654b4c;font-weight:800;line-height:1.5}
+.waste-note p{font-size:10px;color:#947979;margin:6px 0 0;font-weight:400}
+.rack-entry{display:flex;align-items:stretch;gap:3px;border-radius:11px;background:#f6ded0;padding:4px;box-shadow:0 2px 0 #bda39b}
+.rack-entry .rack-patty{box-shadow:none;border-radius:8px 3px 3px 8px;padding:9px}
+.rack-discard{border:1px solid #a96252;border-radius:3px 8px 8px 3px;background:#8e4e43;color:white;font-size:9px;font-weight:900;cursor:pointer;min-width:42px}
+.rack-discard:hover{background:#c04335}
+.burger-trash-row{border-top:1px dashed #dcb6ac;display:flex;align-items:center;gap:14px;margin:12px 0 0;padding-top:8px}
+.burger-trash-row .trash-bin{min-height:88px;min-width:110px}
+.burger-trash-row p{font-size:11px;color:#85666b;line-height:1.4;margin:0}
+#view-burger{overflow:auto}
+@media(max-width:760px){
+ #view-grill .grill-position{gap:20px}
+ #view-grill .discard-slot{font-size:8px;padding:4px}
+ #view-grill .trash-station{gap:9px}
+ #view-grill .grill-position .patty-slot{width:min(100%,86px)}
+ .rack-entry{max-width:100%}
+ .burger-trash-row{flex-wrap:wrap}
+}

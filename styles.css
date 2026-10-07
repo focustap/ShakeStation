@@ -599,3 +599,15 @@ button{font:inherit}
  .grill-legend{font-size:8px}
  .shop-button{padding:8px}
 }
+
+/* Player-controlled topping positions, recorded per order when physically dropped */
+.topping-layer .topping-whipped{left:var(--topping-x,31px)!important;top:var(--topping-y,5px)!important}
+.topping-layer .topping-sprinkles{left:var(--topping-x,25px)!important;top:var(--topping-y,6px)!important}
+.topping-layer .topping-cookie{left:var(--topping-x,27px)!important;top:var(--topping-y,11px)!important}
+.topping-layer .topping-strawberries{left:var(--topping-x,24px)!important;top:var(--topping-y,3px)!important}
+.topping-layer .topping-cherry{left:var(--topping-x,54px)!important;top:var(--topping-y,-6px)!important}
+.finish-workbench-v2 .topping-layer span{filter:drop-shadow(0 2px 1px #fff6)}
+@media(prefers-reduced-motion:reduce){
+ .shake-cup.stirring,.shake-cup.hand-shaking,.syrup-stream.active,.pour-stream.active{animation:none!important}
+ .size-cup,.topping-bowl,.finish-cup{transition:none!important}
+}

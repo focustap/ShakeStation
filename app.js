@@ -1,9 +1,9 @@
 const stationMeta={
   order:["FRONT COUNTER","Order Station","Customers walk in, tell you what they want, and their ticket joins the queue."],
-  grill:["COOK LINE","Grill Station","Cook burger patties carefully. Pull them in the green window before they burn."],
+  grill:["COOK LINE","Grill Station","Click any empty grill spot to start cooking. Click it again to move the patty onto the shared rack. You can prep patties before taking orders."],
   burger:["BUILD LINE","Burger Station","Stack the cooked patty and toppings in the same order the customer requested."],
-  shake:["DRINK LINE","Shake Station","Hold a flavor to pour it, stir the cup, then hold a syrup to drizzle it in."],
-  finish:["FINISH LINE","Finish Station","Add visible toppings to the shake and check the whole order before serving."],
+  shake:["DRINK LINE","Shake Station","Pick up a cup, hold a flavor tap to pour, drag the cup side to side to mix, then squeeze a syrup bottle."],
+  finish:["FINISH LINE","Finish Station","Drag toppings from the bowls onto the cup, or tap a bowl then the cup. Put them exactly where you want."],
   serve:["PICKUP COUNTER","Serve Station","Match your finished food to the ticket and serve it for a score and tip."]
 };
 
@@ -142,7 +142,7 @@ function blankBuild(){
     pattyItem:null,
     pattyQuality:null,
     pattyScore:null,
-    shake:{size:null,base:null,baseAmount:0,stir:0,syrup:null,syrupAmount:0,toppings:[]}
+    shake:{size:null,base:null,baseAmount:0,stir:0,syrup:null,syrupAmount:0,toppings:[],placements:{}}
   };
 }
 
@@ -448,10 +448,15 @@ setInterval(()=>slots.forEach(pattyState),250);
 
 slots.forEach(el=>el.addEventListener("click",()=>{
   if(!el.dataset.start){
-    if(!orders.some(o=>o.burger)||cookedPatties.length>=rackCapacity())return;
+    // Cooking ahead is always allowed, including before the first ticket.
+    if(cookedPatties.length>=rackCapacity()){
+      $("#stationHelp").textContent="The holding rack is full! Use a cooked patty or purchase the larger rack in the shop.";
+      return;
+    }
     el.dataset.start=Date.now();
     el.classList.add("cooking");
     el.querySelector(".patty-label").textContent="COOKING";
+    $("#stationHelp").textContent="Patty started! Watch its marker move from yellow through green to red. Click the same patty to lift it.";
     el.querySelector(".cook-marker").style.left="0%";
     playSfx("grill");
   }else{
@@ -523,7 +528,12 @@ const syrupColors={
 };
 
 function beginHold(kind,value,button){
-  const build=getBuild(); if(!build)return;
+  const order=orders.find(x=>x.id===selectedId);
+  const build=getBuild();
+  if(!build||!order?.shake){
+    $("#stationHelp").textContent="Choose a ticket with a milkshake before using the drink station.";
+    return;
+  }
   if(kind==="syrup"&&!build.shake.base){
     $("#stationHelp").textContent="Pour a shake base before adding syrup.";
     return;
@@ -544,6 +554,17 @@ function beginHold(kind,value,button){
     build.shake.syrup=value;
     startLoop("syrup");
   }
+  // A quick tap gives a visible portion; holding adds continuous liquid.
+  // Previously a short click often poured nothing because the timer never ticked.
+  if(kind==="base"){
+    build.shake.baseAmount=Math.min(100,build.shake.baseAmount+8);
+  }else{
+    build.shake.syrupAmount=Math.min(100,build.shake.syrupAmount+9);
+    const stream=$("#syrupStream");
+    stream.style.background={chocolate:"#6d412f",strawberry:"#db547a",caramel:"#cb853b"}[value];
+    stream.classList.add("active");
+  }
+  renderShakeVisual();
   const pourRates={S:3.0,M:2.1,L:1.55};
   const orderId=selectedId;
   activeHold={kind,value,button,orderId,timer:setInterval(()=>{
@@ -565,6 +586,7 @@ function stopHold(){
   clearInterval(activeHold.timer);
   activeHold.button.classList.remove("holding");
   $("#pourStream").classList.remove("active");
+  $("#syrupStream")?.classList.remove("active");
   $("#shakeCup").classList.remove("stirring");
   $("#shakeSwirl").style.opacity="0";
   stopLoop();
@@ -575,7 +597,9 @@ function stopHold(){
 
 $$("[data-size]").forEach(btn=>{
   btn.addEventListener("click",()=>{
-    const build=getBuild(); if(!build)return;
+    const build=getBuild();
+    const order=orders.find(x=>x.id===selectedId);
+    if(!build||!order?.shake){$("#stationHelp").textContent="Select a milkshake ticket first.";return}
     build.shake.size=btn.dataset.size;
     playSfx("pop");
     renderShakeVisual();
@@ -628,12 +652,18 @@ window.addEventListener("pointerup",()=>{
   $("#shakeSwirl").style.opacity="0";
 });
 
-function toppingNodes(container,list){
+function toppingNodes(container,list,positions={}){
   container.innerHTML="";
   list.forEach(t=>{
-    const s=document.createElement("span");
-    s.className="topping-"+t;
-    container.appendChild(s);
+    const element=document.createElement("span");
+    element.className="topping-"+t;
+    const p=positions[t];
+    if(p){
+      // Place this ingredient where the player actually dropped it.
+      element.style.setProperty("--topping-x",p.x+"%");
+      element.style.setProperty("--topping-y",p.y+"%");
+    }
+    container.appendChild(element);
   });
 }
 
@@ -654,6 +684,7 @@ function renderShakeVisual(){
     $$("[data-size]").forEach(btn=>btn.classList.remove("active"));
     toppingNodes(mainTops,[]);
     toppingNodes(finishTops,[]);
+    $("#syrupStream")?.classList.remove("active");
     return;
   }
 
@@ -681,8 +712,8 @@ function renderShakeVisual(){
   $("#pourMeter").style.width=s.baseAmount+"%";
   $("#stirMeter").style.width=s.stir+"%";
   $("#syrupMeter").style.width=s.syrupAmount+"%";
-  toppingNodes(mainTops,s.toppings);
-  toppingNodes(finishTops,s.toppings);
+  toppingNodes(mainTops,s.toppings,s.placements||{});
+  toppingNodes(finishTops,s.toppings,s.placements||{});
 
   $$("[data-topping]").forEach(btn=>btn.classList.toggle("active",s.toppings.includes(btn.dataset.topping)));
 }
@@ -691,7 +722,7 @@ function renderShakeVisual(){
 $("#clearShake").addEventListener("click",()=>{
   const build=getBuild();if(!build)return;
   stopHold();
-  build.shake={size:null,base:null,baseAmount:0,stir:0,syrup:null,syrupAmount:0,toppings:[]};
+  build.shake={size:null,base:null,baseAmount:0,stir:0,syrup:null,syrupAmount:0,toppings:[],placements:{}};
   playSfx("pop");renderShakeVisual();renderTickets();updateBuildSummary();
 });
 

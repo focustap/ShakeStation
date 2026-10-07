@@ -13,7 +13,7 @@ const goods=[
 let saved={};try{saved=JSON.parse(localStorage.getItem(KEY)||"{}")||{}}catch(e){}
 const owned=new Set(Array.isArray(saved.owned)?saved.owned:[]);
 let theme=["mint","night"].includes(saved.theme)?saved.theme:"pink";
-let day=Math.max(1,Number(saved.day)||1),rep=Math.max(0,Math.min(100,Number(saved.rep)??50));
+let day=Math.max(1,Number(saved.day)||1),rep=Number.isFinite(Number(saved.rep))?Math.max(0,Math.min(100,Number(saved.rep))):50;
 cash=Math.max(0,Number(saved.cash)||0);served=Math.max(0,Number(saved.served)||0);
 let taken=0,servedToday=0,dayRevenue=0,reviews=[],shiftOpen=true,modal=null,topSelected=null,skipTopClick=false;
 const $=s=>document.querySelector(s);
@@ -82,6 +82,7 @@ window.ShakeStationExpansion={
 decorateOrder(o){const n=Math.random();o.special=n<.12?"critic":n<.25?"influencer":null;return o},
 canSpawn(){return shiftOpen&&taken<quota()},
 orderTaken(o){taken++;specialNotice(null);status()},
+customerArrived(o){specialNotice(o)},
 stationChanged(id){if(id==="order")specialNotice(currentCustomer)},
 rackCapacity(){return owned.has("rack")?10:6},
 served(o,score,earned){

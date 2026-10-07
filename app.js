@@ -202,6 +202,7 @@ function spawnCustomer(){
 function takeOrder(){
   if(!currentCustomer||orders.length>=MAX_OPEN_ORDERS)return;
   stopHold();
+  clearIngredient();
   const o=currentCustomer;
   orders.push(o);
   builds[o.id]=blankBuild();
@@ -233,6 +234,7 @@ function renderTickets(){
     b.innerHTML=`<b>#${String(o.id).padStart(2,"0")} · ${o.name}${o.special?` <em class="special-tag">${o.special==="critic"?"★ CRITIC":"✦ INFLUENCER"}</em>`:""}</b><span class="ticket-phase ${phase==="READY"?"ready":""}">${phase}</span><span>${o.type.toUpperCase()}</span><span>${ticketLines(o).replace(/\n/g,"<br>")}</span>`;
     b.addEventListener("click",()=>{
       stopHold();
+      clearIngredient();
       selectedId=o.id;
       renderTickets();
       updateBuildSummary();
@@ -343,7 +345,7 @@ function placeIngredient(kind,pattyId=null){
   const o=orders.find(x=>x.id===selectedId),b=getBuild();
   if(!o?.burger||!b)return false;
   if(kind==="patty"){
-    if(b.burger.includes("patty"))return false;
+    if(b.burger.includes("patty")||b.burger.includes("topbun"))return false;
     const index=pattyId===null?0:cookedPatties.findIndex(x=>x.id===pattyId);
     if(index<0||!cookedPatties.length)return false;
     const p=cookedPatties.splice(index,1)[0];
@@ -657,17 +659,7 @@ function renderShakeVisual(){
   $("[data-topping]").forEach(btn=>btn.classList.toggle("active",s.toppings.includes(btn.dataset.topping)));
 }
 
-$$("[data-topping]").forEach(btn=>btn.addEventListener("click",()=>{
-  const build=getBuild(); if(!build||!build.shake.base)return;
-  const t=btn.dataset.topping;
-  const list=build.shake.toppings;
-  const i=list.indexOf(t);
-  if(i>=0)list.splice(i,1);else list.push(t);
-  playSfx("pop");
-  renderShakeVisual();
-  updateBuildSummary();
-  renderTickets();
-}));
+// Drag and tap-to-place shake toppings live in restaurant.js.
 $("#clearShake").addEventListener("click",()=>{
   const build=getBuild();if(!build)return;
   stopHold();
@@ -765,11 +757,8 @@ $("#serveOrder").addEventListener("click",()=>{
   selectedId=orders[0]?.id||null;
   $("#cash").textContent="$"+cash.toFixed(2);
   $("#served").textContent=served;
-  $("#goalBar").style.width=Math.min(100,cash/75*100)+"%";
-  if(cash>=75){
-    $("#shiftLabel").textContent="DAY 1 · GOAL REACHED ✓";
-    $("#goalMessage").textContent="GOAL REACHED! Keep playing for a high score.";
-    $("#goalBar").classList.add("complete");
+  if(!window.ShakeStationExpansion){
+    $("#goalBar").style.width=Math.min(100,cash/75*100)+"%";
   }
   renderTickets();
   renderQueue();

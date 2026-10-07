@@ -148,89 +148,78 @@
       </section>
 
       <section class="station-view" id="view-shake">
-        <div class="shake-workbench">
-          <div class="shake-machine">
+        <div class="shake-workbench workbench-v2">
+          <div class="shake-machine interactive-shake" aria-label="Milkshake workbench">
+            <div class="prep-title">THE SHAKE LAB <span>CHOOSE CUP → POUR → MIX → SYRUP</span></div>
+            <div class="size-shelf" aria-label="Choose a cup size">
+              <span class="workbench-label">PICK UP A CUP</span>
+              <button class="size-cup size-small" data-size="S" type="button"><i></i><b>S</b></button>
+              <button class="size-cup size-medium" data-size="M" type="button"><i></i><b>M</b></button>
+              <button class="size-cup size-large" data-size="L" type="button"><i></i><b>L</b></button>
+            </div>
             <div class="pour-rig">
-              <div class="machine-face"><i></i><i></i><i></i></div>
+              <div class="machine-face dispenser-taps">
+                <button class="tap-vanilla" data-base="vanilla" type="button" aria-label="Hold to pour vanilla"><i></i><small>VANILLA</small></button>
+                <button class="tap-chocolate" data-base="chocolate" type="button" aria-label="Hold to pour chocolate"><i></i><small>CHOCO</small></button>
+                <button class="tap-strawberry" data-base="strawberry" type="button" aria-label="Hold to pour strawberry"><i></i><small>BERRY</small></button>
+              </div>
               <div class="nozzle"></div>
               <div id="pourStream" class="pour-stream"></div>
             </div>
-
-            <div id="shakeCup" class="shake-cup" title="Drag the cup side to side to shake and mix">
+            <div id="shakeCup" class="shake-cup" title="Drag side-to-side to mix the shake" role="img" aria-label="Shake the cup from side to side to stir">
               <div id="shakeLiquid" class="liquid"></div>
               <div id="shakeSyrup" class="syrup-layer"></div>
               <div id="shakeSwirl" class="swirl"></div>
               <div id="shakeToppings" class="topping-layer"></div>
               <div class="cup-logo">SS</div>
             </div>
+            <div class="syrup-shelf">
+              <span class="workbench-label">SQUEEZE SYRUP</span>
+              <button type="button" class="syrup-bottle chocolate" data-syrup="chocolate" aria-label="Hold to squeeze chocolate syrup"><i></i><b>CHOCO</b></button>
+              <button type="button" class="syrup-bottle strawberry" data-syrup="strawberry" aria-label="Hold to squeeze strawberry syrup"><i></i><b>BERRY</b></button>
+              <button type="button" class="syrup-bottle caramel" data-syrup="caramel" aria-label="Hold to squeeze caramel syrup"><i></i><b>CARAMEL</b></button>
+            </div>
+            <div id="syrupStream" class="syrup-stream"></div>
+            <div class="machine-footer">HOLD THE DISPENSER OR BOTTLE TO POUR · DRAG THE CUP LEFT AND RIGHT TO MIX</div>
           </div>
-
-          <div class="shake-controls">
-            <p class="shake-gesture-tip">Drag the cup side to side to mix! Hold a dispenser button to pour.</p>
-            <div class="control-block">
-              <span>CUP SIZE</span>
-              <div class="size-options">
-                <button data-size="S">Small</button>
-                <button data-size="M">Medium</button>
-                <button data-size="L">Large</button>
-              </div>
-            </div>
-
-            <div class="control-block">
-              <span>POUR BASE · HOLD</span>
-              <div>
-                <button data-base="vanilla">Vanilla</button>
-                <button data-base="chocolate">Chocolate</button>
-                <button data-base="strawberry">Strawberry</button>
-              </div>
-              <div class="action-meter"><i id="pourMeter"></i></div>
-            </div>
-
-            <div class="control-block">
-              <span>STIR · HOLD</span>
-              <button id="stirButton" class="wide">HOLD TO STIR</button>
-              <div class="stir-meter"><i id="stirMeter"></i></div>
-            </div>
-
-            <div class="control-block">
-              <span>SYRUP · HOLD</span>
-              <div>
-                <button data-syrup="chocolate">Chocolate</button>
-                <button data-syrup="strawberry">Strawberry</button>
-                <button data-syrup="caramel">Caramel</button>
-              </div>
-              <div class="action-meter syrup-meter"><i id="syrupMeter"></i></div>
-              <button id="clearShake" class="reset-shake" type="button">↶ EMPTY CUP / START OVER</button>
-            </div>
-          </div>
+          <aside class="shake-coach">
+            <div class="coach-title"><span>YOUR WORKSTATION</span><b>MAKE IT BY HAND</b></div>
+            <div class="coach-step"><b>01</b><div><strong>Pick a cup</strong><p>Choose small, medium, or large from the top shelf.</p></div></div>
+            <div class="coach-step"><b>02</b><div><strong>Pull a flavor tap</strong><p>Press and hold a flavor above the cup to fill it.</p><div class="action-meter"><i id="pourMeter"></i></div></div></div>
+            <div class="coach-step"><b>03</b><div><strong>Move the cup</strong><p>Drag the cup back and forth to blend, or use the mixer.</p><div class="stir-meter"><i id="stirMeter"></i></div><button id="stirButton" class="mixer-button" type="button">HOLD THE MIXER ↻</button></div></div>
+            <div class="coach-step"><b>04</b><div><strong>Squeeze the syrup</strong><p>Press and hold one of the squeeze bottles beside the cup.</p><div class="action-meter syrup-meter"><i id="syrupMeter"></i></div></div></div>
+            <button id="clearShake" class="reset-shake" type="button">↶ EMPTY CUP / START OVER</button>
+          </aside>
         </div>
       </section>
 
       <section class="station-view" id="view-finish">
-        <div class="finish-grid">
+        <div class="finish-grid finish-workbench-v2">
           <div class="finish-card toppings-card">
-            <h3>SHAKE TOPPINGS</h3>
+            <div class="finish-heading"><h3>FINISH THE SHAKE</h3><span>DRAG TOPPINGS ONTO THE CUP</span></div>
             <div class="finish-preview">
-              <div id="finishCup" class="finish-cup">
+              <div class="finish-stage-label">TOPPING COUNTER</div>
+              <div id="finishCup" class="finish-cup" role="button" tabindex="0" aria-label="Place selected topping on cup">
                 <div id="finishLiquid" class="liquid"></div>
                 <div id="finishSyrup" class="syrup-layer"></div>
                 <div id="finishToppings" class="topping-layer"></div>
                 <div class="cup-logo">SS</div>
               </div>
+              <div class="finish-splash"></div>
             </div>
-            <p class="topping-tip">Drag toppings onto the shake, or tap a topping then the cup.</p>
-            <div class="topping-buttons">
-              <button data-topping="whipped">Whipped Cream</button>
-              <button data-topping="sprinkles">Sprinkles</button>
-              <button data-topping="cookie">Cookie Crumbs</button>
-              <button data-topping="strawberries">Strawberries</button>
-              <button data-topping="cherry">Cherry</button>
+            <div class="topping-counter" aria-label="Pick toppings from the counter">
+              <button type="button" class="topping-bowl bowl-whipped" data-topping="whipped"><span>☁️</span><b>CREAM</b></button>
+              <button type="button" class="topping-bowl bowl-sprinkles" data-topping="sprinkles"><span>🌈</span><b>SPRINKLES</b></button>
+              <button type="button" class="topping-bowl bowl-cookie" data-topping="cookie"><span>🍪</span><b>COOKIE</b></button>
+              <button type="button" class="topping-bowl bowl-strawberries" data-topping="strawberries"><span>🍓</span><b>BERRIES</b></button>
+              <button type="button" class="topping-bowl bowl-cherry" data-topping="cherry"><span>🍒</span><b>CHERRY</b></button>
             </div>
+            <p class="topping-tip" id="finishFeedback">Grab a topping and drag it onto the cup. On touchscreens, tap a topping then tap the cup.</p>
           </div>
-
-          <div class="finish-card">
-            <h3>CURRENT BUILD</h3>
+          <div class="finish-card order-clipboard">
+            <h3>YOUR CUSTOMER'S TICKET</h3>
             <div id="buildSummary" class="build-summary">Select a ticket to start building.</div>
+            <p class="clipboard-note">Check the toppings against the ticket, then head to SERVE.</p>
           </div>
         </div>
       </section>

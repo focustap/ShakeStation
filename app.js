@@ -28,6 +28,7 @@ const builds={};
 let activeHold=null;
 let audio=null;
 let loopSound=null;
+const MAX_OPEN_ORDERS=4;
 
 const $=s=>document.querySelector(s);
 const $$=s=>[...document.querySelectorAll(s)];
@@ -141,7 +142,8 @@ function blankBuild(){
 }
 
 function setStation(id){
-  $$(".station").forEach(b=>b.classList.toggle("active",b.dataset.station===id));
+  stopHold();
+  $(".station").forEach(b=>b.classList.toggle("active",b.dataset.station===id));
   $$(".station-view").forEach(v=>v.classList.toggle("active",v.id==="view-"+id));
   const meta=stationMeta[id];
   $("#stationKicker").textContent=meta[0];
@@ -176,7 +178,7 @@ function avatarMarkup(order,mini=false){
 }
 
 function spawnCustomer(){
-  if(currentCustomer)return;
+  if(currentCustomer||orders.length>=MAX_OPEN_ORDERS)return;
   currentCustomer=makeOrder();
   setCustomerAppearance(currentCustomer);
   $("#customerName").textContent=currentCustomer.name;
@@ -193,10 +195,12 @@ function spawnCustomer(){
 }
 
 function takeOrder(){
-  if(!currentCustomer)return;
+  if(!currentCustomer||orders.length>=MAX_OPEN_ORDERS)return;
+  stopHold();
   const o=currentCustomer;
   orders.push(o);
   builds[o.id]=blankBuild();
+  $("#scoreResult").textContent="";
   selectedId=o.id;
   currentCustomer=null;
   playSfx("ticket");
@@ -209,7 +213,7 @@ function takeOrder(){
   renderQueue();
   updateBuildSummary();
   renderShakeVisual();
-  setTimeout(spawnCustomer,1700);
+  if(orders.length<MAX_OPEN_ORDERS)setTimeout(spawnCustomer,1700);
 }
 $("#takeOrder").addEventListener("click",takeOrder);
 
@@ -219,8 +223,10 @@ function renderTickets(){
   orders.forEach(o=>{
     const b=document.createElement("button");
     b.className="ticket"+(o.id===selectedId?" active":"");
-    b.innerHTML=`<b>#${String(o.id).padStart(2,"0")} · ${o.name}</b><span>${o.type.toUpperCase()}</span><span>${ticketLines(o).replace(/\n/g,"<br>")}</span>`;
+    const phase=buildProgress(o,builds[o.id]);
+    b.innerHTML=`<b>#${String(o.id).padStart(2,"0")} · ${o.name}</b><span class="ticket-phase ${phase==="READY"?"ready":""}">${phase}</span><span>${o.type.toUpperCase()}</span><span>${ticketLines(o).replace(/\n/g,"<br>")}</span>`;
     b.addEventListener("click",()=>{
+      stopHold();
       selectedId=o.id;
       renderTickets();
       updateBuildSummary();
@@ -260,6 +266,39 @@ function renderQueue(){
 
 function getBuild(){return selectedId?builds[selectedId]:null}
 
+function missingSteps(o,b){
+  if(!o||!b)return ["Choose an order ticket"];
+  const missing=[];
+  if(o.burger){
+    if(b.pattyQuality===null)missing.push("Cook a patty");
+    if(!b.burger.includes("patty"))missing.push("Add the patty");
+    if(!b.burger.includes("topbun"))missing.push("Finish the burger");
+  }
+  if(o.shake){
+    if(!b.shake.size)missing.push("Pick a cup size");
+    if(!b.shake.base||b.shake.baseAmount<60)missing.push("Pour the shake to 60%");
+    if(b.shake.stir<45)missing.push("Stir to 45%");
+    if(!b.shake.syrup||b.shake.syrupAmount<15)missing.push("Add syrup");
+    if(!b.shake.toppings.length)missing.push("Add toppings");
+  }
+  return missing;
+}
+
+function buildProgress(o,b){
+  if(!missingSteps(o,b).length)return "READY";
+  if(!b)return "NEW";
+  const s=b.shake;
+  return b.pattyQuality||b.burger.length||s.size||s.baseAmount||s.stir||s.syrupAmount||s.toppings.length?"IN PROGRESS":"NEW";
+}
+function updateOrderGuide(){
+  const o=orders.find(x=>x.id===selectedId);
+  const missing=missingSteps(o,getBuild());
+  $("#activeTicketLabel").textContent=o?`#${String(o.id).padStart(2,"0")} · ${o.name}`:"NO TICKET SELECTED";
+  $("#activeTicketSteps").textContent=!o?"Take a customer order to start cooking.":missing.length?"NEXT: "+missing.slice(0,3).join(" · "):"READY TO SERVE ✓";
+  $("#serveOrder").disabled=missing.length>0;
+  $("#serveHint").textContent=!o?"Pick an order ticket first.":missing.length?"Still needed: "+missing.join(" · "):"Everything is on the tray. Serve when you're happy with it!";
+}
+
 const slots=$$(".patty-slot");
 function pattyState(el){
   const start=Number(el.dataset.start||0);
@@ -281,25 +320,34 @@ function pattyState(el){
 setInterval(()=>slots.forEach(pattyState),250);
 
 slots.forEach(el=>el.addEventListener("click",()=>{
-  const build=getBuild(); if(!build)return;
   if(!el.dataset.start){
+    const o=orders.find(x=>x.id===selectedId);
+    if(!o||!o.burger)return;
+    el.dataset.order=String(o.id);
     el.dataset.start=Date.now();
     el.classList.add("cooking");
     el.querySelector(".patty-label").textContent="COOKING";
     el.querySelector(".cook-marker").style.left="0%";
     playSfx("grill");
   }else{
+    const owner=Number(el.dataset.order);
+    const target=builds[owner];
     const secs=(Date.now()-Number(el.dataset.start))/1000;
-    const distance=Math.abs(secs-8.5);
-    build.pattyScore=Math.max(0,Math.round(100-(distance*18)));
-    build.pattyQuality=secs<6?"undercooked":secs<11?"good":"burnt";
+    if(target){
+      const distance=Math.abs(secs-8.5);
+      target.pattyScore=Math.max(0,Math.round(100-(distance*18)));
+      target.pattyQuality=secs<6?"undercooked":secs<11?"good":"burnt";
+    }
     el.dataset.start="";
+    delete el.dataset.order;
     el.className="patty-slot";
     el.querySelector(".patty-label").textContent="+";
     el.querySelector(".cook-marker").style.left="0%";
     playSfx("pop");
     updateBuildSummary();
-    setStation("burger");
+    renderTickets();
+    if(selectedId===owner)setStation("burger");
+    else $("#stationHelp").textContent=`Patty finished for ticket #${owner}. Select that ticket to build its burger.`;
   }
 }));
 
@@ -321,14 +369,19 @@ $$("[data-burger]").forEach(btn=>btn.addEventListener("click",()=>{
   if(item==="patty"&&!build.pattyQuality)return;
   build.burger.push(item);
   playSfx("pop");
+  renderTickets();
   renderBurger();
   updateBuildSummary();
 }));
 $("#clearBurger").addEventListener("click",()=>{
   const build=getBuild(); if(!build)return;
   build.burger=[];
-  renderBurger();
-  updateBuildSummary();
+  renderBurger();renderTickets();updateBuildSummary();
+});
+$("#undoBurger").addEventListener("click",()=>{
+  const build=getBuild(); if(!build||!build.burger.length)return;
+  build.burger.pop();playSfx("pop");
+  renderBurger();renderTickets();updateBuildSummary();
 });
 
 const baseColors={vanilla:"#f0dfae",chocolate:"#7b4d35",strawberry:"#e98caa"};
@@ -340,6 +393,10 @@ const syrupColors={
 
 function beginHold(kind,value,button){
   const build=getBuild(); if(!build)return;
+  if(kind==="syrup"&&!build.shake.base){
+    $("#stationHelp").textContent="Pour a shake base before adding syrup.";
+    return;
+  }
   if(!build.shake.size){
     $("#stationHelp").textContent="Choose a cup size before pouring the shake.";
     return;
@@ -357,8 +414,10 @@ function beginHold(kind,value,button){
     startLoop("syrup");
   }
   const pourRates={S:3.0,M:2.1,L:1.55};
-  activeHold={kind,value,button,timer:setInterval(()=>{
-    const b=getBuild(); if(!b)return;
+  const orderId=selectedId;
+  activeHold={kind,value,button,orderId,timer:setInterval(()=>{
+    const b=builds[orderId];
+    if(!b||selectedId!==orderId){stopHold();return;}
     if(kind==="base"){
       b.shake.base=value;
       b.shake.baseAmount=Math.min(100,b.shake.baseAmount+pourRates[b.shake.size]);
@@ -375,9 +434,12 @@ function stopHold(){
   clearInterval(activeHold.timer);
   activeHold.button.classList.remove("holding");
   $("#pourStream").classList.remove("active");
+  $("#shakeCup").classList.remove("stirring");
+  $("#shakeSwirl").style.opacity="0";
   stopLoop();
   activeHold=null;
   updateBuildSummary();
+  renderTickets();
 }
 
 $$("[data-size]").forEach(btn=>{
@@ -398,6 +460,20 @@ $$("[data-syrup]").forEach(btn=>{
 });
 window.addEventListener("pointerup",stopHold);
 window.addEventListener("pointercancel",stopHold);
+window.addEventListener("blur",stopHold);
+document.addEventListener("visibilitychange",()=>{if(document.hidden)stopHold()});
+$("[data-base],[data-syrup],#stirButton").forEach(btn=>{
+  btn.addEventListener("keydown",e=>{
+    if((e.key===" "||e.key==="Enter")&&!e.repeat){
+      e.preventDefault();
+      if(btn.id==="stirButton")beginStir();
+      else beginHold(btn.dataset.base?"base":"syrup",btn.dataset.base||btn.dataset.syrup,btn);
+    }
+  });
+  btn.addEventListener("keyup",e=>{
+    if(e.key===" "||e.key==="Enter"){e.preventDefault();stopHold()}
+  });
+});
 
 function beginStir(){
   const build=getBuild(); if(!build||!build.shake.base||build.shake.baseAmount<20)return;
@@ -407,8 +483,10 @@ function beginStir(){
   $("#shakeCup").classList.add("stirring");
   $("#stirButton").classList.add("holding");
   startLoop("stir");
-  activeHold={kind:"stir",button:$("#stirButton"),timer:setInterval(()=>{
-    const b=getBuild(); if(!b)return;
+  const orderId=selectedId;
+  activeHold={kind:"stir",button:$("#stirButton"),orderId,timer:setInterval(()=>{
+    const b=builds[orderId];
+    if(!b||selectedId!==orderId){stopHold();return;}
     b.shake.stir=Math.min(100,b.shake.stir+1.8);
     renderShakeVisual();
   },55)};
@@ -475,7 +553,7 @@ function renderShakeVisual(){
   toppingNodes(mainTops,s.toppings);
   toppingNodes(finishTops,s.toppings);
 
-  $$("[data-topping]").forEach(btn=>btn.classList.toggle("active",s.toppings.includes(btn.dataset.topping)));
+  $("[data-topping]").forEach(btn=>btn.classList.toggle("active",s.toppings.includes(btn.dataset.topping)));
 }
 
 $$("[data-topping]").forEach(btn=>btn.addEventListener("click",()=>{
@@ -487,7 +565,14 @@ $$("[data-topping]").forEach(btn=>btn.addEventListener("click",()=>{
   playSfx("pop");
   renderShakeVisual();
   updateBuildSummary();
+  renderTickets();
 }));
+$("#clearShake").addEventListener("click",()=>{
+  const build=getBuild();if(!build)return;
+  stopHold();
+  build.shake={size:null,base:null,baseAmount:0,stir:0,syrup:null,syrupAmount:0,toppings:[]};
+  playSfx("pop");renderShakeVisual();renderTickets();updateBuildSummary();
+});
 
 function updateBuildSummary(){
   const o=orders.find(x=>x.id===selectedId);
@@ -496,6 +581,7 @@ function updateBuildSummary(){
     $("#buildSummary").textContent="Select a ticket to start building.";
     $("#serveTicket").textContent="Select an order ticket.";
     renderBurger();
+    updateOrderGuide();
     return;
   }
   const burger=build.burger.length?build.burger.map(cap).join(" → "):"Not built";
@@ -505,6 +591,7 @@ function updateBuildSummary(){
   $("#buildSummary").textContent=`BURGER\n${burger}\n\nPATTY\n${pattyText}\n\nSHAKE\n${shake}`;
   $("#serveTicket").textContent=`#${String(o.id).padStart(2,"0")} · ${o.name}\n${ticketLines(o)}`;
   renderBurger();
+  updateOrderGuide();
 }
 
 function scoreOrder(o,b){
@@ -513,8 +600,8 @@ function scoreOrder(o,b){
     total+=1;
     points+=(b.pattyScore||0)/100;
     const wanted=["patty",...o.burger.toppings,"topbun"];
-    wanted.forEach(x=>{total++;if(b.burger.includes(x))points++});
-    const extras=b.burger.filter(x=>!wanted.includes(x)).length;
+    wanted.forEach((x,index)=>{total++;if(b.burger[index]===x)points++});
+    const extras=Math.max(0,b.burger.length-wanted.length);
     points=Math.max(0,points-extras*.35);
   }
   if(o.shake){
@@ -537,13 +624,21 @@ $("#serveOrder").addEventListener("click",()=>{
   const idx=orders.findIndex(x=>x.id===selectedId);
   if(idx<0)return;
   const o=orders[idx],b=builds[o.id];
+  if(missingSteps(o,b).length){updateOrderGuide();return}
+  stopHold();
   const score=scoreOrder(o,b);
   const base=o.type==="combo"?12:o.type==="burger"?8:7;
   const earned=base*(.45+.55*(score/100));
   cash+=earned;served++;
   playSfx("ding");
-  $("#scoreResult").textContent=`${score}% order · +$${earned.toFixed(2)}`;
+  const rating=score>=95?"PERFECT!":score>=80?"GREAT JOB!":score>=60?"NICE TRY!":"NEEDS WORK!";
+  $("#scoreResult").textContent=`${rating} · ${score}% · +${earned.toFixed(2)}`;
   delete builds[o.id];
+  slots.filter(el=>Number(el.dataset.order)===o.id).forEach(el=>{
+    el.dataset.start="";delete el.dataset.order;el.className="patty-slot";
+    el.querySelector(".patty-label").textContent="+";
+    el.querySelector(".cook-marker").style.left="0%";
+  });
   orders.splice(idx,1);
   selectedId=orders[0]?.id||null;
   $("#cash").textContent="$"+cash.toFixed(2);
@@ -553,13 +648,15 @@ $("#serveOrder").addEventListener("click",()=>{
   renderQueue();
   updateBuildSummary();
   renderShakeVisual();
+  setTimeout(spawnCustomer,1000);
 });
 
 renderTickets();
 renderQueue();
 renderShakeVisual();
 setTimeout(spawnCustomer,700);
-setInterval(()=>{if(!currentCustomer&&orders.length<4)spawnCustomer()},18000);
+setInterval(()=>{if(!currentCustomer&&orders.length<MAX_OPEN_ORDERS)spawnCustomer()},18000);
+updateOrderGuide();
 
 
 const menuButton=$("#menuButton");

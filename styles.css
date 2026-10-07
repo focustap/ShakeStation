@@ -380,3 +380,48 @@ button{font:inherit}
 .grill-legend span{
   text-align:center;
 }
+
+/* --- Ticket-centric cooking and quality-of-life controls --- */
+.scene-header{gap:14px;min-height:98px;height:auto}
+.scene-side{max-width:52%;display:flex;flex-direction:column;align-items:flex-end;gap:7px}
+.scene-side p{font-size:11px;line-height:1.25}
+.active-ticket-guide{width:100%;background:#fff3f8;border:1px solid #f0cada;border-radius:10px;padding:7px 10px;text-align:right;display:grid;gap:4px}
+.active-ticket-guide strong{color:#bd4e83;font-size:10px;letter-spacing:.05em}
+.active-ticket-guide span{font-size:10px;color:#735663;line-height:1.3}
+.ticket .ticket-phase{display:inline-block;width:auto;margin:1px 0 5px;border-radius:99px;background:#f1e8ed;color:#7b6671;padding:3px 7px;letter-spacing:.05em;font-size:9px;font-weight:900}
+.ticket .ticket-phase.ready{background:#e0f3e2;color:#267434}
+.burger-actions{display:flex;gap:9px;flex-wrap:wrap}
+.burger-actions .small-action{flex:1;min-width:140px}
+.reset-shake{width:100%;margin-top:9px;background:#fff6fa!important;border-style:dashed!important;color:#a95279!important;font-size:10px}
+.serve-hint{margin:0;max-width:520px;text-align:center;font-size:12px;color:var(--muted);line-height:1.45}
+.score-result{text-align:center;line-height:1.4}
+.big-button:disabled{box-shadow:none;filter:grayscale(.35);transform:none}
+@media(max-width:760px){
+  .scene-header{min-height:90px}
+  .scene-side{max-width:55%}
+  .active-ticket-guide{text-align:left}
+  .active-ticket-guide span{font-size:9px}
+  .tray{max-width:92%}
+}
+
+/* --- The serve station now plates the actual build --- */
+.tray{height:166px;max-width:95%;gap:14px}
+.tray>div{width:132px;height:117px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;overflow:hidden}
+.tray>div.empty{opacity:.46}
+.tray>div small{font-size:9px;letter-spacing:.04em;color:#654b48;white-space:nowrap}
+.mini-burger{width:84px;height:76px;display:flex;flex-direction:column-reverse;align-items:center;justify-content:flex-start;padding:5px 0}
+.mini-bottom{display:block;width:64px;height:13px;border-radius:4px 4px 12px 12px;background:#dba05e;border:2px solid #b67a38}
+.mini-layer{display:block;flex:0 0 auto;width:63px;height:6px;border-radius:50%;margin:-1px 0}
+.mini-layer.patty{height:11px;background:#6e412e}
+.mini-layer.cheese{height:5px;background:#f2cd52}
+.mini-layer.lettuce{height:5px;background:#6cb55d}
+.mini-layer.tomato{height:7px;background:#d6524e}
+.mini-layer.onion{height:5px;background:#bd99d1}
+.mini-layer.pickles{height:5px;background:#749344}
+.mini-layer.ketchup{height:4px;background:#b52d31}
+.mini-layer.topbun{height:19px;width:68px;border-radius:60% 60% 8px 8px;background:#e2a65e;border:2px solid #b67a38}
+.mini-cup{height:72px;width:54px;position:relative;border:3px solid #fffb;border-top-width:6px;clip-path:polygon(0 0,100% 0,84% 100%,16% 100%);background:#fffa;overflow:hidden}
+.mini-cup i{position:absolute;bottom:0;left:0;right:0}
+.mini-cup b{position:absolute;z-index:2;left:50%;top:49%;transform:translate(-50%,-50%);background:var(--pink);border-radius:99px;padding:5px;font-size:9px;color:white}
+.goal-message{margin:8px 0 0;font-size:10px;color:var(--muted);line-height:1.4}
+#goalBar.complete{background:linear-gradient(90deg,#61ae6a,#b9db78)}

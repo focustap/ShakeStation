@@ -487,7 +487,7 @@ function renderBurger(){
   });
 }
 
-$("[data-burger]").forEach(btn=>{
+$$("[data-burger]").forEach(btn=>{
   // Native button click also works with Enter/Space for keyboard players.
   btn.addEventListener("click",()=>{
     if(wasJustDragged(btn))return;

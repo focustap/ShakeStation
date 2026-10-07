@@ -574,6 +574,28 @@ $("#clearShake").addEventListener("click",()=>{
   playSfx("pop");renderShakeVisual();renderTickets();updateBuildSummary();
 });
 
+// Live plating preview at the pickup counter reflects the selected ticket.
+function renderTray(){
+  const o=orders.find(x=>x.id===selectedId), b=getBuild();
+  const burger=$("#trayBurger"),shake=$("#trayShake");
+  burger.classList.toggle("empty",!o?.burger);
+  shake.classList.toggle("empty",!o?.shake);
+  if(!o?.burger){
+    burger.textContent="NO BURGER";
+  }else{
+    const layers=(b?.burger||[]).map(x=>`<span class="mini-layer ${x}"></span>`).join("");
+    burger.innerHTML=`<div class="mini-burger"><span class="mini-bottom"></span>${layers}</div><small>${b?.burger.includes("topbun")?"ASSEMBLED":"BUILDING"}</small>`;
+  }
+  if(!o?.shake){
+    shake.textContent="NO SHAKE";
+  }else{
+    const s=b.shake;
+    const height=Math.min(78,s.baseAmount*.78);
+    const color=baseColors[s.base]||"transparent";
+    shake.innerHTML=`<div class="mini-cup"><i style="height:${height}%;background:${color}"></i><b>SS</b></div><small>${s.size||"?"} · ${s.base?cap(s.base):"EMPTY"}</small>`;
+  }
+}
+
 function updateBuildSummary(){
   const o=orders.find(x=>x.id===selectedId);
   const build=getBuild();
@@ -581,6 +603,7 @@ function updateBuildSummary(){
     $("#buildSummary").textContent="Select a ticket to start building.";
     $("#serveTicket").textContent="Select an order ticket.";
     renderBurger();
+    renderTray();
     updateOrderGuide();
     return;
   }
@@ -591,6 +614,7 @@ function updateBuildSummary(){
   $("#buildSummary").textContent=`BURGER\n${burger}\n\nPATTY\n${pattyText}\n\nSHAKE\n${shake}`;
   $("#serveTicket").textContent=`#${String(o.id).padStart(2,"0")} · ${o.name}\n${ticketLines(o)}`;
   renderBurger();
+  renderTray();
   updateOrderGuide();
 }
 
@@ -644,6 +668,11 @@ $("#serveOrder").addEventListener("click",()=>{
   $("#cash").textContent="$"+cash.toFixed(2);
   $("#served").textContent=served;
   $("#goalBar").style.width=Math.min(100,cash/75*100)+"%";
+  if(cash>=75){
+    $("#shiftLabel").textContent="DAY 1 · GOAL REACHED ✓";
+    $("#goalMessage").textContent="GOAL REACHED! Keep playing for a high score.";
+    $("#goalBar").classList.add("complete");
+  }
   renderTickets();
   renderQueue();
   updateBuildSummary();

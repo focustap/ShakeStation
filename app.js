@@ -147,7 +147,7 @@ function blankBuild(){
 
 function setStation(id){
   stopHold();
-  $(".station").forEach(b=>b.classList.toggle("active",b.dataset.station===id));
+  $$(".station").forEach(b=>b.classList.toggle("active",b.dataset.station===id));
   $$(".station-view").forEach(v=>v.classList.toggle("active",v.id==="view-"+id));
   const meta=stationMeta[id];
   $("#stationKicker").textContent=meta[0];
@@ -157,7 +157,7 @@ function setStation(id){
   renderShakeVisual();
   window.ShakeStationExpansion?.stationChanged(id);
 }
-$(".station").forEach(b=>b.addEventListener("click",()=>setStation(b.dataset.station)));
+$$(".station").forEach(b=>b.addEventListener("click",()=>setStation(b.dataset.station)));
 
 function setCustomerAppearance(order){
   const el=$("#customer");
@@ -360,12 +360,12 @@ function placeIngredient(kind,pattyId=null){
 }
 function selectIngredient(ingredient){
   pendingIngredient=ingredient;
-  $(".ingredient-tray button,.rack-patty").forEach(el=>el.classList.toggle("selected-ingredient",ingredient.type==="patty"?el.dataset.patty===String(ingredient.pattyId):el.dataset.burger===ingredient.type));
+  $$(".ingredient-tray button,.rack-patty").forEach(el=>el.classList.toggle("selected-ingredient",ingredient.type==="patty"?el.dataset.patty===String(ingredient.pattyId):el.dataset.burger===ingredient.type));
   $("#burgerHint").textContent=`Place ${ingredient.type==="patty"?"cooked patty":cap(ingredient.type)} onto the burger →`;
 }
 function clearIngredient(){
   pendingIngredient=null;
-  $(".selected-ingredient").forEach(el=>el.classList.remove("selected-ingredient"));
+  $$(".selected-ingredient").forEach(el=>el.classList.remove("selected-ingredient"));
   $("#burgerHint").textContent="Drag ingredients onto the burger or tap an ingredient, then tap the bun.";
 }
 function ingredientPointerStart(e){
@@ -459,7 +459,7 @@ function renderBurger(){
   });
 }
 
-$("[data-burger]").forEach(btn=>{
+$$("[data-burger]").forEach(btn=>{
   btn.addEventListener("click",()=>{
     selectIngredient({type:btn.dataset.burger});
   });
@@ -566,7 +566,7 @@ window.addEventListener("pointerup",stopHold);
 window.addEventListener("pointercancel",stopHold);
 window.addEventListener("blur",stopHold);
 document.addEventListener("visibilitychange",()=>{if(document.hidden)stopHold()});
-$("[data-base],[data-syrup],#stirButton").forEach(btn=>{
+$$("[data-base],[data-syrup],#stirButton").forEach(btn=>{
   btn.addEventListener("keydown",e=>{
     if((e.key===" "||e.key==="Enter")&&!e.repeat){
       e.preventDefault();
@@ -657,7 +657,7 @@ function renderShakeVisual(){
   toppingNodes(mainTops,s.toppings);
   toppingNodes(finishTops,s.toppings);
 
-  $("[data-topping]").forEach(btn=>btn.classList.toggle("active",s.toppings.includes(btn.dataset.topping)));
+  $$("[data-topping]").forEach(btn=>btn.classList.toggle("active",s.toppings.includes(btn.dataset.topping)));
 }
 
 // Drag and tap-to-place shake toppings live in restaurant.js.

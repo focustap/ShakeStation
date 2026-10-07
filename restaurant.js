@@ -109,10 +109,11 @@ applyDecor();status();
 const cup=$("#shakeCup");
 cup.addEventListener("pointerdown",e=>{
 if(e.button!==0)return;
-const build=getBuild();if(!build?.shake?.size)return;
+const build=getBuild();if(!build?.shake?.size||build.shake.baseAmount<15)return;
 e.preventDefault();stopHold();
 const id=selectedId,x=e.clientX,y=e.clientY;let last=x,changed=false;
 cup.classList.add("hand-shaking");
+$("#shakeSwirl").style.opacity=".55";
 function move(ev){
 if(id!==selectedId){done();return}
 const dx=clamp(ev.clientX-x,-70,70),dy=clamp(ev.clientY-y,-35,35);
@@ -126,6 +127,7 @@ renderShakeVisual();changed=true;
 function done(){
 window.removeEventListener("pointermove",move);window.removeEventListener("pointerup",done);window.removeEventListener("pointercancel",done);
 cup.classList.remove("hand-shaking");cup.style.translate="0px 0px";
+$("#shakeSwirl").style.opacity="0";
 if(changed){playSfx("pop");updateBuildSummary();renderTickets()}
 }
 window.addEventListener("pointermove",move);window.addEventListener("pointerup",done);window.addEventListener("pointercancel",done);
@@ -133,11 +135,35 @@ window.addEventListener("pointermove",move);window.addEventListener("pointerup",
 
 // Shake toppings are chosen, then placed on the cup; dragging works on touch too.
 const toppingButtons=[...document.querySelectorAll("[data-topping]")];
-function putTopping(t){
-const b=getBuild(),o=orders.find(x=>x.id===selectedId);if(!o?.shake||!b?.shake?.base)return false;
-const list=b.shake.toppings,at=list.indexOf(t);
-if(at>=0)list.splice(at,1);else list.push(t);
-playSfx("pop");renderShakeVisual();renderTickets();updateBuildSummary();return true;
+function putTopping(t,clientX=null,clientY=null,target=$("#finishCup")){
+  const b=getBuild(),o=orders.find(x=>x.id===selectedId),feedback=$("#finishFeedback");
+  if(!o?.shake||!b?.shake?.base||b.shake.baseAmount<20){
+    feedback.textContent="Pour a milkshake for this ticket before adding toppings.";
+    return false;
+  }
+  const list=b.shake.toppings,at=list.indexOf(t);
+  if(!b.shake.placements)b.shake.placements={};
+  if(at>=0){
+    list.splice(at,1);
+    delete b.shake.placements[t];
+    feedback.textContent=cap(t)+" removed. Drag it back if you want it!";
+  }else{
+    list.push(t);
+    const r=target.getBoundingClientRect();
+    const frac=clientX===null?.5:clamp((clientX-r.left)/Math.max(1,r.width),0,1);
+    const fY=clientY===null?.05:clamp((clientY-r.top)/Math.max(1,r.height),0,1);
+    // Store normalized offsets so both station cups reflect where it was placed.
+    b.shake.placements[t]={
+      x:Math.round(5+frac*42),
+      y:Math.round(fY*24)
+    };
+    feedback.textContent=cap(t)+" placed! Keep decorating, or serve the order.";
+  }
+  target.classList.add("placing");
+  setTimeout(()=>target.classList.remove("placing"),250);
+  playSfx("pop");
+  renderShakeVisual();renderTickets();updateBuildSummary();
+  return true;
 }
 function unselect(){topSelected=null;toppingButtons.forEach(b=>b.classList.remove("selected-ingredient"))}
 toppingButtons.forEach(btn=>{
@@ -161,7 +187,7 @@ ghost.remove();skipTopClick=true;setTimeout(()=>{skipTopClick=false},0);
 for(const target of [$("#finishCup"),cup]){
 const r=target.getBoundingClientRect();
 if(ev.clientX>=r.left-15&&ev.clientX<=r.right+15&&ev.clientY>=r.top-15&&ev.clientY<=r.bottom+15){
-putTopping(btn.dataset.topping);unselect();break;
+putTopping(btn.dataset.topping,ev.clientX,ev.clientY,target);unselect();break;
 }
 }
 }
@@ -169,7 +195,17 @@ putTopping(btn.dataset.topping);unselect();break;
 window.addEventListener("pointermove",move);window.addEventListener("pointerup",done);window.addEventListener("pointercancel",done);
 });
 });
-[$("#finishCup"),cup].forEach(el=>el.addEventListener("click",()=>{if(topSelected&&putTopping(topSelected))unselect()}));
+[$("#finishCup"),cup].forEach(el=>{
+  el.addEventListener("click",e=>{
+    if(topSelected&&putTopping(topSelected,e.clientX??null,e.clientY??null,el))unselect();
+  });
+  el.addEventListener("keydown",e=>{
+    if((e.key==="Enter"||e.key===" ")&&topSelected){
+      e.preventDefault();
+      if(putTopping(topSelected,null,null,el))unselect();
+    }
+  });
+});
 const oldSpawn=spawnCustomer;
 spawnCustomer=function(){oldSpawn();if(currentCustomer)specialNotice(currentCustomer)};
 })();

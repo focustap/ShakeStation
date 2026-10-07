@@ -403,3 +403,25 @@ button{font:inherit}
   .active-ticket-guide span{font-size:9px}
   .tray{max-width:92%}
 }
+
+/* --- The serve station now plates the actual build --- */
+.tray{height:166px;max-width:95%;gap:14px}
+.tray>div{width:132px;height:117px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;overflow:hidden}
+.tray>div.empty{opacity:.46}
+.tray>div small{font-size:9px;letter-spacing:.04em;color:#654b48;white-space:nowrap}
+.mini-burger{width:84px;height:76px;display:flex;flex-direction:column-reverse;align-items:center;justify-content:flex-start;padding:5px 0}
+.mini-bottom{display:block;width:64px;height:13px;border-radius:4px 4px 12px 12px;background:#dba05e;border:2px solid #b67a38}
+.mini-layer{display:block;flex:0 0 auto;width:63px;height:6px;border-radius:50%;margin:-1px 0}
+.mini-layer.patty{height:11px;background:#6e412e}
+.mini-layer.cheese{height:5px;background:#f2cd52}
+.mini-layer.lettuce{height:5px;background:#6cb55d}
+.mini-layer.tomato{height:7px;background:#d6524e}
+.mini-layer.onion{height:5px;background:#bd99d1}
+.mini-layer.pickles{height:5px;background:#749344}
+.mini-layer.ketchup{height:4px;background:#b52d31}
+.mini-layer.topbun{height:19px;width:68px;border-radius:60% 60% 8px 8px;background:#e2a65e;border:2px solid #b67a38}
+.mini-cup{height:72px;width:54px;position:relative;border:3px solid #fffb;border-top-width:6px;clip-path:polygon(0 0,100% 0,84% 100%,16% 100%);background:#fffa;overflow:hidden}
+.mini-cup i{position:absolute;bottom:0;left:0;right:0}
+.mini-cup b{position:absolute;z-index:2;left:50%;top:49%;transform:translate(-50%,-50%);background:var(--pink);border-radius:99px;padding:5px;font-size:9px;color:white}
+.goal-message{margin:8px 0 0;font-size:10px;color:var(--muted);line-height:1.4}
+#goalBar.complete{background:linear-gradient(90deg,#61ae6a,#b9db78)}

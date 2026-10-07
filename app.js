@@ -197,6 +197,7 @@ function spawnCustomer(){
     setTimeout(()=>{$("#speech").classList.add("show");playSfx("door")},580);
   });
   renderQueue();
+  window.ShakeStationExpansion?.customerArrived(currentCustomer);
 }
 
 function takeOrder(){

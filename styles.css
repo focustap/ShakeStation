@@ -450,3 +450,56 @@ button{font:inherit}
 .topping-buttons button{touch-action:none;cursor:grab}
 .topping-buttons button.selected-ingredient{outline:3px solid var(--pink)}
 @media(max-width:760px){#view-burger .build-counter{height:auto;min-height:520px}.holding-heading{flex-wrap:wrap}}
+
+/* Shift progression, visitor reviews and restaurant upgrades */
+.shop-button{border:2px solid #f4bfd4;border-radius:10px;padding:10px 15px;background:#fff9fc;color:#bd4b83;font-weight:900;cursor:pointer;white-space:nowrap}
+.shop-button:hover{background:#ffe1ee}
+.rep-stat b{color:#ae6b27}
+.special-tag{font-style:normal;background:#fde4a4;border-radius:8px;padding:2px 4px;color:#865a28;font-size:8px;white-space:normal;display:inline-block}
+.special-notice{position:absolute;top:8px;left:50%;transform:translateX(-50%);z-index:12;min-width:200px;max-width:80%;padding:9px 12px;text-align:center;font-size:10px;font-weight:900;background:#fff4d5;border:2px solid #d8ad54;border-radius:11px;box-shadow:0 4px 14px #0002}
+.special-notice[hidden]{display:none}
+.station-overlay[hidden]{display:none}
+.station-overlay{position:fixed;inset:0;z-index:1000;font-family:Arial,Helvetica,sans-serif}
+.modal-backdrop{position:absolute;inset:0;background:#231f2bc2;display:flex;align-items:center;justify-content:center;padding:18px}
+.station-modal{width:min(740px,100%);max-height:90vh;overflow:auto;background:#fff9f6;border:4px solid #e6afc5;border-radius:19px;box-shadow:0 25px 70px #140e1866;padding:24px}
+.modal-heading{display:flex;align-items:flex-start;justify-content:space-between;gap:15px}
+.modal-heading small{font-size:10px;color:#bc6390;font-weight:900;letter-spacing:2px}
+.modal-heading h2{font-size:28px;margin:5px 0;color:#8e4265}
+.modal-heading p{margin:0 0 12px;color:#7d6c72;font-size:12px;line-height:1.4}
+.modal-x{border:1px solid #e3b7c8;border-radius:8px;background:#fff;font-size:20px;color:#a45b7b;padding:6px 11px;cursor:pointer}
+.wallet{background:#ffe9cb;padding:10px 13px;border-radius:10px;font-size:13px;font-weight:900;margin:10px 0}
+.shop-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.shop-item{background:#fff;border:1px solid #e9cbd7;border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:7px;min-height:170px}
+.shop-icon{font-size:25px}
+.shop-item strong{font-size:13px}
+.shop-item p{font-size:11px;color:#796971;line-height:1.4;margin:0;flex:1}
+.shop-item button,.modal-footer button{border:0;border-radius:8px;background:#e875aa;color:#fff;font-size:11px;font-weight:900;padding:11px;cursor:pointer}
+.shop-item button:disabled{background:#e6d9df;color:#817882;cursor:not-allowed}
+.modal-footer{display:flex;justify-content:flex-end;gap:11px;margin-top:18px;flex-wrap:wrap}
+.modal-footer .primary-next{background:#52a86d}
+.report-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.report-grid>div{padding:15px;border-radius:11px;background:#ffe7f0;display:flex;flex-direction:column;gap:5px}
+.report-grid small{font-size:10px;font-weight:900;color:#9d607a}
+.report-grid strong{font-size:25px}
+.reviews{margin-top:15px;background:white;border:1px solid #edd1da;border-radius:11px;padding:15px;font-size:13px}
+.reviews p{color:#775b6b;font-size:12px;line-height:1.45}
+.theme-mint{--pink:#48bca7;--pink2:#259584;--blue:#8cd8d0;--line:#c3ddda;--paper:#f3fffb}
+.theme-mint .topbar,.theme-mint .station.active{background:#e8fff6}
+.theme-mint .restaurant-scene{filter:hue-rotate(60deg) saturate(.85)}
+.theme-night{--pink:#637dbd;--pink2:#4d609c;--blue:#91a5d0;--line:#c8cce1;--paper:#f5f6ff}
+.theme-night .topbar,.theme-night .station.active{background:#e8eafe}
+.theme-night .restaurant-scene{filter:hue-rotate(145deg) saturate(.7)}
+.has-neon .open-sign{background:#ed78c9!important;color:#fff;box-shadow:0 0 15px 4px #ff6ddd,0 0 30px #ee75e9!important}
+.has-plants .plant{filter:drop-shadow(0 0 8px #7bcc56) saturate(1.5)}
+.has-jukebox .menu-board{box-shadow:0 0 0 3px #d1c0de,0 0 18px #e888c5}
+.has-vip .booth{filter:drop-shadow(0 0 8px #ffd06e)}
+.hand-shaking{filter:drop-shadow(0 0 9px #6dcadbaa)}
+.shake-cup{transition:translate .2s ease}
+.shake-cup.hand-shaking{transition:none}
+@media(max-width:750px){
+ .shop-button{padding:6px 7px;font-size:10px}
+ .rep-stat{display:none}
+ .shop-grid{grid-template-columns:repeat(2,1fr)}
+ .station-modal{padding:16px;max-height:95vh}
+ .modal-heading h2{font-size:21px}
+}

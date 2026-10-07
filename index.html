@@ -113,8 +113,12 @@
           </div>
           <div class="grill-legend"><span>UNDER</span><span>PERFECT</span><span>BURNT</span></div>
         </div>
+        <div class="holding-panel">
+          <div class="holding-heading"><strong>🍔 COOKED PATTY RACK</strong><b id="rackCount">0/6</b></div>
+          <div class="holding-rack" id="grillRack"></div>
+        </div>
         <div class="station-actions">
-          <p>Click an empty spot to put down a patty. Click a cooking patty to pull it off. Leave it too long and it burns.</p>
+          <p>Click to start a patty, then click again to lift it onto your shared holding rack. Cook several in parallel!</p>
           <div class="heat-key"><i></i><span>Pull the patty as close to the center of green as you can.</span></div>
         </div>
       </section>
@@ -122,10 +126,10 @@
       <section class="station-view" id="view-burger">
         <div class="build-counter">
           <div class="burger-pad">
-            <div class="burger-stack" id="burgerStack"><div class="bun bottom"></div></div>
+            <div class="burger-stack" id="burgerStack" class="burger-drop" role="button" tabindex="0" aria-label="Place selected burger ingredient"><div class="bun bottom"></div></div>
           </div>
           <div class="ingredient-tray">
-            <button data-burger="patty">Patty</button>
+            <button data-burger="patty">Patty from rack</button>
             <button data-burger="cheese">Cheese</button>
             <button data-burger="lettuce">Lettuce</button>
             <button data-burger="tomato">Tomato</button>
@@ -135,6 +139,8 @@
             <button data-burger="topbun">Top Bun</button>
           </div>
         </div>
+        <p class="drag-hint" id="burgerHint">Drag ingredients onto the burger or tap an ingredient, then tap the bun.</p>
+        <div class="holding-panel burger-holding"><div class="holding-heading"><strong>READY PATTIES · SHARED RACK</strong><small>Tap then tap bun, or drag it.</small></div><div class="holding-rack" id="burgerRack"></div></div>
         <div class="burger-actions">
           <button id="undoBurger" class="small-action">↶ UNDO LAST LAYER</button>
           <button id="clearBurger" class="small-action">CLEAR BURGER</button>
@@ -150,7 +156,7 @@
               <div id="pourStream" class="pour-stream"></div>
             </div>
 
-            <div id="shakeCup" class="shake-cup">
+            <div id="shakeCup" class="shake-cup" title="Drag the cup side to side to shake and mix">
               <div id="shakeLiquid" class="liquid"></div>
               <div id="shakeSyrup" class="syrup-layer"></div>
               <div id="shakeSwirl" class="swirl"></div>
@@ -160,6 +166,7 @@
           </div>
 
           <div class="shake-controls">
+            <p class="shake-gesture-tip">Drag the cup side to side to mix! Hold a dispenser button to pour.</p>
             <div class="control-block">
               <span>CUP SIZE</span>
               <div class="size-options">
@@ -211,6 +218,7 @@
                 <div class="cup-logo">SS</div>
               </div>
             </div>
+            <p class="topping-tip">Drag toppings onto the shake, or tap a topping then the cup.</p>
             <div class="topping-buttons">
               <button data-topping="whipped">Whipped Cream</button>
               <button data-topping="sprinkles">Sprinkles</button>
@@ -254,5 +262,6 @@
   </main>
 </div>
 <script src="app.js"></script>
+<script src="restaurant.js"></script>
 </body>
 </html>

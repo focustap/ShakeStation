@@ -29,6 +29,9 @@ let activeHold=null;
 let audio=null;
 let loopSound=null;
 const MAX_OPEN_ORDERS=4;
+const cookedPatties=[];
+let pendingIngredient=null;
+let pattySerial=0;
 
 const $=s=>document.querySelector(s);
 const $$=s=>[...document.querySelectorAll(s)];
@@ -115,7 +118,7 @@ function makeOrder(){
       toppings:sample(shakeToppings,1,3)
     };
   }
-  return order;
+  return window.ShakeStationExpansion?.decorateOrder(order)||order;
 }
 
 function orderSentence(o){
@@ -135,6 +138,7 @@ function ticketLines(o){
 function blankBuild(){
   return{
     burger:[],
+    pattyItem:null,
     pattyQuality:null,
     pattyScore:null,
     shake:{size:null,base:null,baseAmount:0,stir:0,syrup:null,syrupAmount:0,toppings:[]}
@@ -143,7 +147,7 @@ function blankBuild(){
 
 function setStation(id){
   stopHold();
-  $(".station").forEach(b=>b.classList.toggle("active",b.dataset.station===id));
+  $$(".station").forEach(b=>b.classList.toggle("active",b.dataset.station===id));
   $$(".station-view").forEach(v=>v.classList.toggle("active",v.id==="view-"+id));
   const meta=stationMeta[id];
   $("#stationKicker").textContent=meta[0];
@@ -151,6 +155,7 @@ function setStation(id){
   $("#stationHelp").textContent=meta[2];
   updateBuildSummary();
   renderShakeVisual();
+  window.ShakeStationExpansion?.stationChanged(id);
 }
 $$(".station").forEach(b=>b.addEventListener("click",()=>setStation(b.dataset.station)));
 
@@ -178,7 +183,7 @@ function avatarMarkup(order,mini=false){
 }
 
 function spawnCustomer(){
-  if(currentCustomer||orders.length>=MAX_OPEN_ORDERS)return;
+  if(currentCustomer||orders.length>=MAX_OPEN_ORDERS||window.ShakeStationExpansion?.canSpawn()===false)return;
   currentCustomer=makeOrder();
   setCustomerAppearance(currentCustomer);
   $("#customerName").textContent=currentCustomer.name;
@@ -192,14 +197,17 @@ function spawnCustomer(){
     setTimeout(()=>{$("#speech").classList.add("show");playSfx("door")},580);
   });
   renderQueue();
+  window.ShakeStationExpansion?.customerArrived(currentCustomer);
 }
 
 function takeOrder(){
   if(!currentCustomer||orders.length>=MAX_OPEN_ORDERS)return;
   stopHold();
+  clearIngredient();
   const o=currentCustomer;
   orders.push(o);
   builds[o.id]=blankBuild();
+  window.ShakeStationExpansion?.orderTaken(o);
   $("#scoreResult").textContent="";
   selectedId=o.id;
   currentCustomer=null;
@@ -224,9 +232,10 @@ function renderTickets(){
     const b=document.createElement("button");
     b.className="ticket"+(o.id===selectedId?" active":"");
     const phase=buildProgress(o,builds[o.id]);
-    b.innerHTML=`<b>#${String(o.id).padStart(2,"0")} · ${o.name}</b><span class="ticket-phase ${phase==="READY"?"ready":""}">${phase}</span><span>${o.type.toUpperCase()}</span><span>${ticketLines(o).replace(/\n/g,"<br>")}</span>`;
+    b.innerHTML=`<b>#${String(o.id).padStart(2,"0")} · ${o.name}${o.special?` <em class="special-tag">${o.special==="critic"?"★ CRITIC":"✦ INFLUENCER"}</em>`:""}</b><span class="ticket-phase ${phase==="READY"?"ready":""}">${phase}</span><span>${o.type.toUpperCase()}</span><span>${ticketLines(o).replace(/\n/g,"<br>")}</span>`;
     b.addEventListener("click",()=>{
       stopHold();
+      clearIngredient();
       selectedId=o.id;
       renderTickets();
       updateBuildSummary();
@@ -270,7 +279,7 @@ function missingSteps(o,b){
   if(!o||!b)return ["Choose an order ticket"];
   const missing=[];
   if(o.burger){
-    if(b.pattyQuality===null)missing.push("Cook a patty");
+    if(b.pattyQuality===null)missing.push("Take a cooked patty from the rack");
     if(!b.burger.includes("patty"))missing.push("Add the patty");
     if(!b.burger.includes("topbun"))missing.push("Finish the burger");
   }
@@ -300,6 +309,96 @@ function updateOrderGuide(){
 }
 
 const slots=$$(".patty-slot");
+function rackCapacity(){return window.ShakeStationExpansion?.rackCapacity()||6}
+function renderCookedRack(){
+  ["#grillRack","#burgerRack"].forEach(sel=>{
+    const rack=$(sel);if(!rack)return;
+    rack.innerHTML="";
+    if(!cookedPatties.length){
+      const empty=document.createElement("span");
+      empty.className="rack-empty";
+      empty.textContent="No patties yet · cook some on the grill!";
+      rack.appendChild(empty);
+    }
+    cookedPatties.forEach((p,i)=>{
+      const btn=document.createElement("button");
+      btn.type="button";
+      btn.className="rack-patty "+p.quality;
+      btn.dataset.patty=String(p.id);
+      btn.textContent=`🍔 ${p.quality.toUpperCase()} · ${p.score}%`;
+      btn.title="Drag onto the burger, or tap and then tap the burger";
+      btn.addEventListener("pointerdown",ingredientPointerStart);
+      btn.addEventListener("click",()=>selectIngredient({type:"patty",pattyId:p.id}));
+      rack.appendChild(btn);
+    });
+  });
+  $("#rackCount").textContent=`${cookedPatties.length}/${rackCapacity()}`;
+}
+function returnPatty(build){
+  if(!build?.pattyItem)return;
+  cookedPatties.unshift(build.pattyItem);
+  build.pattyItem=null;
+  build.pattyScore=null;
+  build.pattyQuality=null;
+  renderCookedRack();
+}
+function placeIngredient(kind,pattyId=null){
+  const o=orders.find(x=>x.id===selectedId),b=getBuild();
+  if(!o?.burger||!b)return false;
+  if(kind==="patty"){
+    if(b.burger.includes("patty")||b.burger.includes("topbun"))return false;
+    const index=pattyId===null?0:cookedPatties.findIndex(x=>x.id===pattyId);
+    if(index<0||!cookedPatties.length)return false;
+    const p=cookedPatties.splice(index,1)[0];
+    b.pattyItem=p;b.pattyQuality=p.quality;b.pattyScore=p.score;
+    renderCookedRack();
+  }
+  if(b.burger.includes("topbun"))return false;
+  b.burger.push(kind);playSfx("pop");
+  renderBurger();renderTickets();updateBuildSummary();
+  return true;
+}
+function selectIngredient(ingredient){
+  pendingIngredient=ingredient;
+  $$(".ingredient-tray button,.rack-patty").forEach(el=>el.classList.toggle("selected-ingredient",ingredient.type==="patty"?el.dataset.patty===String(ingredient.pattyId):el.dataset.burger===ingredient.type));
+  $("#burgerHint").textContent=`Place ${ingredient.type==="patty"?"cooked patty":cap(ingredient.type)} onto the burger →`;
+}
+function clearIngredient(){
+  pendingIngredient=null;
+  $$(".selected-ingredient").forEach(el=>el.classList.remove("selected-ingredient"));
+  $("#burgerHint").textContent="Drag ingredients onto the burger or tap an ingredient, then tap the bun.";
+}
+function ingredientPointerStart(e){
+  if(e.button!==0)return;
+  const source=e.currentTarget;
+  const ingredient=source.dataset.patty?{type:"patty",pattyId:Number(source.dataset.patty)}:{type:source.dataset.burger};
+  const startX=e.clientX,startY=e.clientY;
+  let ghost=null;
+  function move(ev){
+    if(!ghost&&Math.hypot(ev.clientX-startX,ev.clientY-startY)>8){
+      ghost=document.createElement("div");
+      ghost.className="ingredient-ghost";ghost.textContent=source.textContent.trim();
+      document.body.appendChild(ghost);
+    }
+    if(ghost){ghost.style.left=ev.clientX+"px";ghost.style.top=ev.clientY+"px"}
+  }
+  function finish(ev){
+    window.removeEventListener("pointermove",move);
+    window.removeEventListener("pointerup",finish);
+    window.removeEventListener("pointercancel",finish);
+    if(ghost){
+      ghost.remove();
+      const drop=$("#burgerStack").getBoundingClientRect();
+      if(ev.clientX>=drop.left-45&&ev.clientX<=drop.right+45&&ev.clientY>=drop.top-45&&ev.clientY<=drop.bottom+45){
+        if(placeIngredient(ingredient.type,ingredient.pattyId??null))clearIngredient();
+      }
+    }
+  }
+  window.addEventListener("pointermove",move);
+  window.addEventListener("pointerup",finish,{once:true});
+  window.addEventListener("pointercancel",finish,{once:true});
+}
+
 function pattyState(el){
   const start=Number(el.dataset.start||0);
   if(!start)return;
@@ -321,33 +420,30 @@ setInterval(()=>slots.forEach(pattyState),250);
 
 slots.forEach(el=>el.addEventListener("click",()=>{
   if(!el.dataset.start){
-    const o=orders.find(x=>x.id===selectedId);
-    if(!o||!o.burger)return;
-    el.dataset.order=String(o.id);
+    if(!orders.some(o=>o.burger)||cookedPatties.length>=rackCapacity())return;
     el.dataset.start=Date.now();
     el.classList.add("cooking");
     el.querySelector(".patty-label").textContent="COOKING";
     el.querySelector(".cook-marker").style.left="0%";
     playSfx("grill");
   }else{
-    const owner=Number(el.dataset.order);
-    const target=builds[owner];
-    const secs=(Date.now()-Number(el.dataset.start))/1000;
-    if(target){
-      const distance=Math.abs(secs-8.5);
-      target.pattyScore=Math.max(0,Math.round(100-(distance*18)));
-      target.pattyQuality=secs<6?"undercooked":secs<11?"good":"burnt";
+    if(cookedPatties.length>=rackCapacity()){
+      $("#stationHelp").textContent="The holding rack is full. Use some patties before lifting another.";
+      return;
     }
+    const secs=(Date.now()-Number(el.dataset.start))/1000;
+    const distance=Math.abs(secs-8.5);
+    const score=Math.max(0,Math.round(100-(distance*18)));
+    const quality=secs<6?"undercooked":secs<11?"good":"burnt";
+    cookedPatties.push({id:++pattySerial,score,quality});
     el.dataset.start="";
-    delete el.dataset.order;
     el.className="patty-slot";
     el.querySelector(".patty-label").textContent="+";
     el.querySelector(".cook-marker").style.left="0%";
     playSfx("pop");
-    updateBuildSummary();
-    renderTickets();
-    if(selectedId===owner)setStation("burger");
-    else $("#stationHelp").textContent=`Patty finished for ticket #${owner}. Select that ticket to build its burger.`;
+    renderCookedRack();
+    updateBuildSummary();renderTickets();
+    $("#stationHelp").textContent=`Patty on holding rack (${cookedPatties.length}/${rackCapacity()}). Keep cooking or start assembling!`;
   }
 }));
 
@@ -363,24 +459,32 @@ function renderBurger(){
   });
 }
 
-$$("[data-burger]").forEach(btn=>btn.addEventListener("click",()=>{
-  const build=getBuild(); if(!build)return;
-  const item=btn.dataset.burger;
-  if(item==="patty"&&!build.pattyQuality)return;
-  build.burger.push(item);
-  playSfx("pop");
-  renderTickets();
-  renderBurger();
-  updateBuildSummary();
-}));
+$$("[data-burger]").forEach(btn=>{
+  btn.addEventListener("click",()=>{
+    selectIngredient({type:btn.dataset.burger});
+  });
+  btn.addEventListener("pointerdown",ingredientPointerStart);
+  btn.addEventListener("keydown",e=>{
+    if(e.key==="Enter"&&placeIngredient(btn.dataset.burger))clearIngredient();
+  });
+});
+$("#burgerStack").addEventListener("click",()=>{
+  if(pendingIngredient&&placeIngredient(pendingIngredient.type,pendingIngredient.pattyId??null))clearIngredient();
+});
+$("#burgerStack").addEventListener("keydown",e=>{
+  if((e.key==="Enter"||e.key===" ")&&pendingIngredient){e.preventDefault();if(placeIngredient(pendingIngredient.type,pendingIngredient.pattyId??null))clearIngredient()}
+});
 $("#clearBurger").addEventListener("click",()=>{
   const build=getBuild(); if(!build)return;
-  build.burger=[];
+  returnPatty(build);
+  build.burger=[];clearIngredient();
   renderBurger();renderTickets();updateBuildSummary();
 });
 $("#undoBurger").addEventListener("click",()=>{
   const build=getBuild(); if(!build||!build.burger.length)return;
-  build.burger.pop();playSfx("pop");
+  const removed=build.burger.pop();
+  if(removed==="patty")returnPatty(build);
+  playSfx("pop");
   renderBurger();renderTickets();updateBuildSummary();
 });
 
@@ -462,7 +566,7 @@ window.addEventListener("pointerup",stopHold);
 window.addEventListener("pointercancel",stopHold);
 window.addEventListener("blur",stopHold);
 document.addEventListener("visibilitychange",()=>{if(document.hidden)stopHold()});
-$("[data-base],[data-syrup],#stirButton").forEach(btn=>{
+$$("[data-base],[data-syrup],#stirButton").forEach(btn=>{
   btn.addEventListener("keydown",e=>{
     if((e.key===" "||e.key==="Enter")&&!e.repeat){
       e.preventDefault();
@@ -553,20 +657,10 @@ function renderShakeVisual(){
   toppingNodes(mainTops,s.toppings);
   toppingNodes(finishTops,s.toppings);
 
-  $("[data-topping]").forEach(btn=>btn.classList.toggle("active",s.toppings.includes(btn.dataset.topping)));
+  $$("[data-topping]").forEach(btn=>btn.classList.toggle("active",s.toppings.includes(btn.dataset.topping)));
 }
 
-$$("[data-topping]").forEach(btn=>btn.addEventListener("click",()=>{
-  const build=getBuild(); if(!build||!build.shake.base)return;
-  const t=btn.dataset.topping;
-  const list=build.shake.toppings;
-  const i=list.indexOf(t);
-  if(i>=0)list.splice(i,1);else list.push(t);
-  playSfx("pop");
-  renderShakeVisual();
-  updateBuildSummary();
-  renderTickets();
-}));
+// Drag and tap-to-place shake toppings live in restaurant.js.
 $("#clearShake").addEventListener("click",()=>{
   const build=getBuild();if(!build)return;
   stopHold();
@@ -652,36 +746,32 @@ $("#serveOrder").addEventListener("click",()=>{
   stopHold();
   const score=scoreOrder(o,b);
   const base=o.type==="combo"?12:o.type==="burger"?8:7;
-  const earned=base*(.45+.55*(score/100));
+  let earned=base*(.45+.55*(score/100));
   cash+=earned;served++;
   playSfx("ding");
   const rating=score>=95?"PERFECT!":score>=80?"GREAT JOB!":score>=60?"NICE TRY!":"NEEDS WORK!";
-  $("#scoreResult").textContent=`${rating} · ${score}% · +${earned.toFixed(2)}`;
+  $("#scoreResult").textContent=`${rating} · ${score}% · +$${earned.toFixed(2)}`;
+  window.ShakeStationExpansion?.served(o,score,earned);
   delete builds[o.id];
-  slots.filter(el=>Number(el.dataset.order)===o.id).forEach(el=>{
-    el.dataset.start="";delete el.dataset.order;el.className="patty-slot";
-    el.querySelector(".patty-label").textContent="+";
-    el.querySelector(".cook-marker").style.left="0%";
-  });
+  clearIngredient();
   orders.splice(idx,1);
   selectedId=orders[0]?.id||null;
   $("#cash").textContent="$"+cash.toFixed(2);
   $("#served").textContent=served;
-  $("#goalBar").style.width=Math.min(100,cash/75*100)+"%";
-  if(cash>=75){
-    $("#shiftLabel").textContent="DAY 1 · GOAL REACHED ✓";
-    $("#goalMessage").textContent="GOAL REACHED! Keep playing for a high score.";
-    $("#goalBar").classList.add("complete");
+  if(!window.ShakeStationExpansion){
+    $("#goalBar").style.width=Math.min(100,cash/75*100)+"%";
   }
   renderTickets();
   renderQueue();
   updateBuildSummary();
   renderShakeVisual();
+  window.ShakeStationExpansion?.afterServe();
   setTimeout(spawnCustomer,1000);
 });
 
 renderTickets();
 renderQueue();
+renderCookedRack();
 renderShakeVisual();
 setTimeout(spawnCustomer,700);
 setInterval(()=>{if(!currentCustomer&&orders.length<MAX_OPEN_ORDERS)spawnCustomer()},18000);

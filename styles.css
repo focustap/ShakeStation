@@ -380,3 +380,26 @@ button{font:inherit}
 .grill-legend span{
   text-align:center;
 }
+
+/* --- Ticket-centric cooking and quality-of-life controls --- */
+.scene-header{gap:14px;min-height:98px;height:auto}
+.scene-side{max-width:52%;display:flex;flex-direction:column;align-items:flex-end;gap:7px}
+.scene-side p{font-size:11px;line-height:1.25}
+.active-ticket-guide{width:100%;background:#fff3f8;border:1px solid #f0cada;border-radius:10px;padding:7px 10px;text-align:right;display:grid;gap:4px}
+.active-ticket-guide strong{color:#bd4e83;font-size:10px;letter-spacing:.05em}
+.active-ticket-guide span{font-size:10px;color:#735663;line-height:1.3}
+.ticket .ticket-phase{display:inline-block;width:auto;margin:1px 0 5px;border-radius:99px;background:#f1e8ed;color:#7b6671;padding:3px 7px;letter-spacing:.05em;font-size:9px;font-weight:900}
+.ticket .ticket-phase.ready{background:#e0f3e2;color:#267434}
+.burger-actions{display:flex;gap:9px;flex-wrap:wrap}
+.burger-actions .small-action{flex:1;min-width:140px}
+.reset-shake{width:100%;margin-top:9px;background:#fff6fa!important;border-style:dashed!important;color:#a95279!important;font-size:10px}
+.serve-hint{margin:0;max-width:520px;text-align:center;font-size:12px;color:var(--muted);line-height:1.45}
+.score-result{text-align:center;line-height:1.4}
+.big-button:disabled{box-shadow:none;filter:grayscale(.35);transform:none}
+@media(max-width:760px){
+  .scene-header{min-height:90px}
+  .scene-side{max-width:55%}
+  .active-ticket-guide{text-align:left}
+  .active-ticket-guide span{font-size:9px}
+  .tray{max-width:92%}
+}

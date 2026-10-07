@@ -98,24 +98,40 @@
         <div class="grill-wrap">
           <div class="grill">
             <div class="grill-lines"></div>
-            <button class="patty-slot" data-slot="0">
-              <span class="patty-label">+</span>
-              <span class="cook-bar"><i class="cook-marker"></i></span>
-            </button>
-            <button class="patty-slot" data-slot="1">
-              <span class="patty-label">+</span>
-              <span class="cook-bar"><i class="cook-marker"></i></span>
-            </button>
-            <button class="patty-slot" data-slot="2">
-              <span class="patty-label">+</span>
-              <span class="cook-bar"><i class="cook-marker"></i></span>
-            </button>
+            <div class="grill-position">
+              <button class="patty-slot" type="button" data-slot="0" aria-label="Grill patty 1; click to cook or lift">
+                <span class="patty-label">+</span>
+                <span class="cook-bar"><i class="cook-marker"></i></span>
+              </button>
+              <button class="discard-slot" data-discard-slot="0" type="button" aria-label="Throw away patty from grill spot 1" title="Throw away this patty">🗑 TOSS</button>
+            </div>
+            <div class="grill-position">
+              <button class="patty-slot" type="button" data-slot="1" aria-label="Grill patty 2; click to cook or lift">
+                <span class="patty-label">+</span>
+                <span class="cook-bar"><i class="cook-marker"></i></span>
+              </button>
+              <button class="discard-slot" data-discard-slot="1" type="button" aria-label="Throw away patty from grill spot 2" title="Throw away this patty">🗑 TOSS</button>
+            </div>
+            <div class="grill-position">
+              <button class="patty-slot" type="button" data-slot="2" aria-label="Grill patty 3; click to cook or lift">
+                <span class="patty-label">+</span>
+                <span class="cook-bar"><i class="cook-marker"></i></span>
+              </button>
+              <button class="discard-slot" data-discard-slot="2" type="button" aria-label="Throw away patty from grill spot 3" title="Throw away this patty">🗑 TOSS</button>
+            </div>
           </div>
           <div class="grill-legend"><span>UNDER</span><span>PERFECT</span><span>BURNT</span></div>
         </div>
         <div class="holding-panel">
           <div class="holding-heading"><strong>🍔 COOKED PATTY RACK</strong><b id="rackCount">0/6</b></div>
           <div class="holding-rack" id="grillRack"></div>
+        </div>
+        <div class="trash-station">
+          <button class="trash-bin" id="grillTrash" type="button" aria-label="Trash bin; drag a cooked or cooking patty here">
+            <span class="trash-bin-lid"></span><span class="trash-bin-can">🗑️</span>
+            <b>TRASH BIN</b><small>Drag burnt patties here</small>
+          </button>
+          <div class="waste-note">Waste thrown away: <strong id="grillWasteCount">0</strong><p>Use TOSS below a patty, the rack's trash buttons, or drag one into the bin.</p></div>
         </div>
         <div class="station-actions">
           <p>Click to start a patty, then click again to lift it onto your shared holding rack. Cook several in parallel!</p>
@@ -143,7 +159,14 @@
         <div class="holding-panel burger-holding"><div class="holding-heading"><strong>READY PATTIES · SHARED RACK</strong><small>Click to add, or drag it onto the bun.</small></div><div class="holding-rack" id="burgerRack"></div></div>
         <div class="burger-actions">
           <button id="undoBurger" class="small-action">↶ UNDO LAST LAYER</button>
-          <button id="clearBurger" class="small-action">CLEAR BURGER</button>
+          <button id="clearBurger" class="small-action">CLEAR BURGER · SAVE PATTY</button>
+        </div>
+        <div class="burger-trash-row">
+          <button class="trash-bin" id="burgerTrash" type="button" aria-label="Trash the current burger, including its patty">
+            <span class="trash-bin-lid"></span><span class="trash-bin-can">🗑️</span>
+            <b>TRASH BURGER</b><small>Discard the whole build</small>
+          </button>
+          <p>Made a mistake or used a burnt patty? Toss the burger here to start it again. Waste: <b id="burgerWasteCount">0</b></p>
         </div>
       </section>
 

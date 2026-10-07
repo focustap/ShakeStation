@@ -308,7 +308,7 @@ function updateOrderGuide(){
   $("#serveHint").textContent=!o?"Pick an order ticket first.":missing.length?"Still needed: "+missing.join(" · "):"Everything is on the tray. Serve when you're happy with it!";
 }
 
-const slots=$(".patty-slot");
+const slots=$$(".patty-slot");
 function rackCapacity(){return window.ShakeStationExpansion?.rackCapacity()||6}
 function renderCookedRack(){
   ["#grillRack","#burgerRack"].forEach(sel=>{

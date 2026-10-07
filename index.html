@@ -45,7 +45,13 @@
           <small id="stationKicker">FRONT COUNTER</small>
           <h1 id="stationTitle">Order Station</h1>
         </div>
-        <p id="stationHelp">Customers walk in, tell you what they want, and their ticket joins the queue.</p>
+        <div class="scene-side">
+          <p id="stationHelp">Customers walk in, tell you what they want, and their ticket joins the queue.</p>
+          <div class="active-ticket-guide" aria-live="polite" aria-atomic="true">
+            <strong id="activeTicketLabel">NO TICKET SELECTED</strong>
+            <span id="activeTicketSteps">Take a customer order to start cooking.</span>
+          </div>
+        </div>
       </div>
 
       <section class="station-view active" id="view-order">
@@ -129,7 +135,10 @@
             <button data-burger="topbun">Top Bun</button>
           </div>
         </div>
-        <button id="clearBurger" class="small-action">CLEAR BURGER</button>
+        <div class="burger-actions">
+          <button id="undoBurger" class="small-action">↶ UNDO LAST LAYER</button>
+          <button id="clearBurger" class="small-action">CLEAR BURGER</button>
+        </div>
       </section>
 
       <section class="station-view" id="view-shake">
@@ -184,6 +193,7 @@
                 <button data-syrup="caramel">Caramel</button>
               </div>
               <div class="action-meter syrup-meter"><i id="syrupMeter"></i></div>
+              <button id="clearShake" class="reset-shake" type="button">↶ EMPTY CUP / START OVER</button>
             </div>
           </div>
         </div>
@@ -224,8 +234,9 @@
             <div class="tray-burger">BURGER</div>
             <div class="tray-shake">SHAKE</div>
           </div>
-          <button id="serveOrder" class="big-button">SERVE ORDER</button>
-          <div id="scoreResult" class="score-result"></div>
+          <button id="serveOrder" class="big-button" disabled>SERVE ORDER</button>
+          <p id="serveHint" class="serve-hint" role="status">Pick an order ticket first.</p>
+          <div id="scoreResult" class="score-result" role="status"></div>
         </div>
       </section>
     </section>

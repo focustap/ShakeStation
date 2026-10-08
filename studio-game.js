@@ -87,7 +87,7 @@ function prop(type,token,label,extra=""){
 }
 function stackMarkup(o,b){
  const pieces=['bottombun',...(b?.layers||[])];
- return '<div class="stacked-burger" data-drag="assembled-burger" tabindex="0" role="img" aria-label="Current burger; drag to trash to discard">'+pieces.map((x,i)=>'<div class="burger-layer '+(x==="topbun"?"top":"")+'" style="z-index:'+(i+1)+'">'+art(x==="patty"&&b?.patty?.quality==="burnt"?"burnt":x)+'</div>').join("")+'</div>';
+ return '<div class="stacked-burger" data-drag="assembled-burger" tabindex="0" role="img" aria-label="Current burger; drag to trash to discard">'+pieces.map((x,i)=>'<div class="burger-layer '+(x==="topbun"?"top":"")+'" style="--layer:'+i+';z-index:'+(i+1)+'">'+art(x==="patty"&&b?.patty?.quality==="burnt"?"burnt":x)+'</div>').join("")+'</div>';
 }
 function visualCup(s){return art("cup",{base:s.base,fill:s.fill,syrup:s.syrup})}
 function colorGuest(o){
@@ -274,8 +274,8 @@ function topShake(type,e,zone){
  const existing=b.shake.toppings.findIndex(x=>x.type===type);
  if(existing>=0)b.shake.toppings.splice(existing,1);
  const rect=zone.getBoundingClientRect();
- const x=clamp(Math.round((e.clientX-rect.left)/Math.max(1,rect.width)*100),10,80);
- const y=clamp(Math.round((e.clientY-rect.top)/Math.max(1,rect.height)*50),3,36);
+ const x=clamp(Math.round((e.clientX-rect.left)/Math.max(1,rect.width)*60+20),25,72);
+ const y=clamp(Math.round((e.clientY-rect.top)/Math.max(1,rect.height)*18),1,18);
  b.shake.toppings.push({type,x,y});
  tone("pop");renderAll();
 }

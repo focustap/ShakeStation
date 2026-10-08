@@ -8,6 +8,7 @@ const toppings=["lettuce","tomato","onion","pickles","cheese","ketchup"];
 const shakeTops=["whipped","sprinkles","cookie","strawberries","cherry"];
 const bases=["vanilla","chocolate","strawberry"],syrups=["chocolate","strawberry","caramel"],sizes=["S","M","L"];
 const shop=[
+{id:"pink",title:"Classic Pink",desc:"The original strawberry-and-cream diner look.",price:0,icon:"🍓",type:"theme"},
 {id:"mint",title:"Mint Makeover",desc:"A fresh mint-and-cream diner theme.",price:30,icon:"🎨",type:"theme"},
 {id:"night",title:"Moonlight Diner",desc:"Blue, lavender and midnight sparkle.",price:45,icon:"🌙",type:"theme"},
 {id:"neon",title:"Neon Sign",desc:"Give the shop a little more sparkle.",price:24,icon:"💡",type:"decor"},
@@ -100,7 +101,7 @@ function cleaned(s){
  o.rack=Array.isArray(s.rack)?s.rack:[];
  o.builds=s.builds&&typeof s.builds==="object"?s.builds:{};
  o.money=Math.max(0,Number(s.money)||0);
- o.rep=Math.min(100,Math.max(0,Number(s.rep)||50));
+ o.rep=Math.min(100,Math.max(0,Number.isFinite(Number(s.rep))?Number(s.rep):50));
  o.day=Math.max(1,Math.round(Number(s.day)||1));
  o.nextOrderId=Math.max(1,Math.round(Number(s.nextOrderId)||1));
  o.view=["front","grill","burger","shake","finish"].includes(s.view)?s.view:"front";

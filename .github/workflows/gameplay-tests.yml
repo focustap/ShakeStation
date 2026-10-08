@@ -1,0 +1,32 @@
+name: ShakeStation Gameplay Smoke Tests
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+jobs:
+  game-browser-test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install
+      - run: npx playwright install --with-deps chromium
+      - name: Start local game server
+        run: |
+          python3 -m http.server 4173 --bind 127.0.0.1 > /tmp/shakestation-server.log 2>&1 &
+          sleep 2
+      - name: Run actual browser gameplay
+        run: npm test
+      - name: Save browser test report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: shakestation-playwright
+          path: |
+            playwright-report/
+            test-results/
+          retention-days: 7

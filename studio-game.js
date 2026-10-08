@@ -424,6 +424,15 @@ function moveDrag(e){
  ghost.style.left=e.clientX+"px";ghost.style.top=e.clientY+"px";
  const shift=Math.hypot(e.clientX-drag.startX,e.clientY-drag.startY);
  drag.distance=shift;
+ $$(".drop-glow").forEach(el=>el.classList.remove("drop-glow"));
+ if(shift>9){
+  const targets=$$("[data-drop]").filter(el=>{
+   const r=el.getBoundingClientRect();
+   return e.clientX>=r.left&&e.clientX<=r.right&&e.clientY>=r.top&&e.clientY<=r.bottom;
+  });
+  const target=targets.sort((a,b)=>a.getBoundingClientRect().width-b.getBoundingClientRect().width)[0];
+  if(target)target.classList.add("drop-glow");
+ }
  if(drag.token==="active-cup"){
   const b=build();
   if(b?.shake&&b.shake.fill>=15){
@@ -442,6 +451,7 @@ function finishDrag(e){
  const current=drag;drag=null;
  $("#dragSprite").hidden=true;$("#dragSprite").innerHTML="";
  const token=current.token;
+ $$(".drop-glow").forEach(el=>el.classList.remove("drop-glow"));
  if(current.distance>=9)ignoreClickUntil=Date.now()+450;
  const stage=$("#stage");
  const points=$$("[data-drop]").filter(zone=>{
@@ -452,6 +462,13 @@ function finishDrag(e){
  if(e.type==="pointercancel"){renderAll();return}
  if(zone)performDrop(token,zone.dataset.drop,e,zone);
  else if(current.distance<9){
+  // A cooking patty should always lift on a short click. The drag
+  // system must not replace its DOM element before the browser click fires.
+  if(token.startsWith("grill:")){
+   ignoreClickUntil=Date.now()+450;
+   clickGrill(Number(token.split(":")[1]));
+   return;
+  }
   // Touch accessibility: tap an object, then tap the target surface.
   selectedProp=token;
   toast("Picked up! Drag onto the work surface, or tap where you want to place it.");

@@ -99,3 +99,26 @@ body.theme-night .front-sign{background:#697bb4;border-color:#afb9e4}
 body.theme-night .grill-scene{background:linear-gradient(#a6b7d0 0 53%,#798ca9 53% 58%,#f0e7f1 58%)}
 body.theme-night .front-window{background:linear-gradient(#536789,#ad8ab5 65%,#f0d79d)}
 .cup-platform .cup-visual:before{content:'';position:absolute;z-index:3;top:13px;right:20px;width:8px;height:52px;border-radius:5px;background:repeating-linear-gradient(0deg,#ec79a6 0 9px,#fff 9px 18px);transform:rotate(19deg);pointer-events:none}
+
+/* Final visual pass: actual stacked food rather than hovering ingredient symbols. */
+.stacked-burger{position:relative;height:225px;min-height:225px;width:min(90%,260px);display:block;margin:auto}
+.burger-layer,.burger-layer:first-child,.burger-layer.top{
+  position:absolute;left:50%;bottom:calc(14px + var(--layer,0) * 18px);
+  width:155px;height:145px;margin:0;padding:0;transform:translateX(-50%);
+  display:block;flex:none;pointer-events:none
+}
+.burger-layer .food-svg{display:block;width:100%;height:100%;transform:none;filter:drop-shadow(0 5px 3px #6b402e66)}
+.burger-layer.top{margin:0}
+.plating-tray .stacked-burger{height:220px;min-height:220px;transform:scale(.70);transform-origin:center}
+.plating-tray .burger-layer,.plating-tray .burger-layer:first-child,.plating-tray .burger-layer.top{margin:0}
+.finish-topper{width:34px!important;height:34px!important;z-index:12;transform:translate(-50%,-60%);pointer-events:none}
+.finish-topper .food-svg{width:100%!important;height:100%!important;filter:drop-shadow(0 2px 1px #6b426744)}
+.plated-item{overflow:visible}
+.finish-side{position:relative;z-index:13}
+.syrup-rack .illustrated-prop .food-svg{transform:scale(1.35);transform-origin:center bottom}
+.game-toast{padding:10px 15px;font-size:11px;max-width:min(375px,88vw);border-radius:11px}
+@media(max-width:790px){
+ .stacked-burger{height:210px;min-height:210px;width:92%}
+ .burger-layer,.burger-layer:first-child,.burger-layer.top{width:125px;height:120px;bottom:calc(18px + var(--layer,0) * 18px)}
+ .plating-tray .stacked-burger{transform:scale(.57);transform-origin:center}
+}

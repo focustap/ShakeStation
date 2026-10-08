@@ -1,0 +1,279 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ShakeStation</title>
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="game">
+  <header class="topbar">
+    <div class="logo">SHAKE<span>STATION</span></div>
+    <div class="shift" id="shiftLabel">DAY 1 · MORNING SHIFT</div>
+    <div class="stats">
+      <div><small>CASH</small><b id="cash">$0.00</b></div>
+      <div><small>SERVED</small><b id="served">0</b></div>
+      <div class="menu-wrap">
+        <button class="menu" id="menuButton" aria-label="Menu" aria-expanded="false"><i></i><i></i><i></i></button>
+        <div class="game-menu" id="gameMenu" hidden>
+          <div class="game-menu-title">ShakeStation</div>
+          <div class="game-menu-row"><span>Build</span><b id="buildId">2538</b></div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <nav class="stations">
+    <button class="station active" data-station="order">ORDER</button>
+    <button class="station" data-station="grill">GRILL</button>
+    <button class="station" data-station="burger">BURGER</button>
+    <button class="station" data-station="shake">SHAKE</button>
+    <button class="station" data-station="finish">FINISH</button>
+    <button class="station" data-station="serve">SERVE</button>
+  </nav>
+
+  <main class="layout">
+    <aside class="tickets-panel">
+      <div class="panel-title"><span>ORDER TICKETS</span><b id="ticketCount">0</b></div>
+      <div id="tickets" class="tickets"></div>
+    </aside>
+
+    <section class="play-area">
+      <div class="scene-header">
+        <div>
+          <small id="stationKicker">FRONT COUNTER</small>
+          <h1 id="stationTitle">Order Station</h1>
+        </div>
+        <div class="scene-side">
+          <p id="stationHelp">Customers walk in, tell you what they want, and their ticket joins the queue.</p>
+          <div class="active-ticket-guide" aria-live="polite" aria-atomic="true">
+            <strong id="activeTicketLabel">NO TICKET SELECTED</strong>
+            <span id="activeTicketSteps">Take a customer order to start cooking.</span>
+          </div>
+        </div>
+      </div>
+
+      <section class="station-view active" id="view-order">
+        <div class="restaurant-scene">
+          <div class="ceiling-lights"><i></i><i></i><i></i></div>
+          <div class="wall-stripe"></div>
+          <div class="window">
+            <span class="window-cloud one"></span>
+            <span class="window-cloud two"></span>
+          </div>
+          <div class="open-sign">OPEN</div>
+          <div class="menu-board">
+            <b>SHAKES</b><span>Vanilla</span><span>Chocolate</span><span>Strawberry</span>
+            <b>BURGERS</b><span>Cheese</span><span>Lettuce</span><span>Tomato</span><span>Onion</span>
+          </div>
+          <div class="booth"><i></i><i></i></div>
+          <div class="plant"><i></i></div>
+          <div class="front-counter"></div>
+          <div class="door"><span></span></div>
+          <div id="lobbyWaiting" class="lobby-waiting"></div>
+
+          <div id="customer" class="customer">
+            <div class="head">
+              <span class="hair"></span>
+              <span class="eye eye-left"></span>
+              <span class="eye eye-right"></span>
+              <span class="mouth"></span>
+            </div>
+            <div class="body"></div>
+          </div>
+          <div id="speech" class="speech">Welcome to ShakeStation!</div>
+        </div>
+        <div class="order-controls">
+          <div>
+            <small>CURRENT CUSTOMER</small>
+            <h2 id="customerName">Waiting...</h2>
+            <p id="orderText">A customer will walk in shortly.</p>
+          </div>
+          <button id="takeOrder" class="big-button" disabled>TAKE ORDER</button>
+        </div>
+      </section>
+
+      <section class="station-view" id="view-grill">
+        <div class="grill-wrap">
+          <div class="grill">
+            <div class="grill-lines"></div>
+            <div class="grill-position">
+              <button class="patty-slot" type="button" data-slot="0" aria-label="Grill patty 1; click to cook or lift">
+                <span class="patty-label">+</span>
+                <span class="cook-bar"><i class="cook-marker"></i></span>
+              </button>
+              <button class="discard-slot" data-discard-slot="0" type="button" aria-label="Throw away patty from grill spot 1" title="Throw away this patty">🗑 TOSS</button>
+            </div>
+            <div class="grill-position">
+              <button class="patty-slot" type="button" data-slot="1" aria-label="Grill patty 2; click to cook or lift">
+                <span class="patty-label">+</span>
+                <span class="cook-bar"><i class="cook-marker"></i></span>
+              </button>
+              <button class="discard-slot" data-discard-slot="1" type="button" aria-label="Throw away patty from grill spot 2" title="Throw away this patty">🗑 TOSS</button>
+            </div>
+            <div class="grill-position">
+              <button class="patty-slot" type="button" data-slot="2" aria-label="Grill patty 3; click to cook or lift">
+                <span class="patty-label">+</span>
+                <span class="cook-bar"><i class="cook-marker"></i></span>
+              </button>
+              <button class="discard-slot" data-discard-slot="2" type="button" aria-label="Throw away patty from grill spot 3" title="Throw away this patty">🗑 TOSS</button>
+            </div>
+          </div>
+          <div class="grill-legend"><span>UNDER</span><span>PERFECT</span><span>BURNT</span></div>
+        </div>
+        <div class="holding-panel">
+          <div class="holding-heading"><strong>🍔 COOKED PATTY RACK</strong><b id="rackCount">0/6</b></div>
+          <div class="holding-rack" id="grillRack"></div>
+        </div>
+        <div class="trash-station">
+          <button class="trash-bin" id="grillTrash" type="button" aria-label="Trash bin; drag a cooked or cooking patty here">
+            <span class="trash-bin-lid"></span><span class="trash-bin-can">🗑️</span>
+            <b>TRASH BIN</b><small>Drag burnt patties here</small>
+          </button>
+          <div class="waste-note">Waste thrown away: <strong id="grillWasteCount">0</strong><p>Use TOSS below a patty, the rack's trash buttons, or drag one into the bin.</p></div>
+        </div>
+        <div class="station-actions">
+          <p>Click to start a patty, then click again to lift it onto your shared holding rack. Cook several in parallel!</p>
+          <div class="heat-key"><i></i><span>Pull the patty as close to the center of green as you can.</span></div>
+        </div>
+      </section>
+
+      <section class="station-view" id="view-burger">
+        <div class="build-counter">
+          <div class="burger-pad">
+            <div class="burger-stack burger-drop" id="burgerStack" role="button" tabindex="0" aria-label="Place selected burger ingredient"><div class="bun bottom"></div></div>
+          </div>
+          <div class="ingredient-tray">
+            <button data-burger="patty">Patty from rack</button>
+            <button data-burger="cheese">Cheese</button>
+            <button data-burger="lettuce">Lettuce</button>
+            <button data-burger="tomato">Tomato</button>
+            <button data-burger="onion">Onion</button>
+            <button data-burger="pickles">Pickles</button>
+            <button data-burger="ketchup">Ketchup</button>
+            <button data-burger="topbun">Top Bun</button>
+          </div>
+        </div>
+        <p class="drag-hint" id="burgerHint">Click an ingredient to add it, or drag it onto the bun.</p>
+        <div class="holding-panel burger-holding"><div class="holding-heading"><strong>READY PATTIES · SHARED RACK</strong><small>Click to add, or drag it onto the bun.</small></div><div class="holding-rack" id="burgerRack"></div></div>
+        <div class="burger-actions">
+          <button id="undoBurger" class="small-action">↶ UNDO LAST LAYER</button>
+          <button id="clearBurger" class="small-action">CLEAR BURGER · SAVE PATTY</button>
+        </div>
+        <div class="burger-trash-row">
+          <button class="trash-bin" id="burgerTrash" type="button" aria-label="Trash the current burger, including its patty">
+            <span class="trash-bin-lid"></span><span class="trash-bin-can">🗑️</span>
+            <b>TRASH BURGER</b><small>Discard the whole build</small>
+          </button>
+          <p>Made a mistake or used a burnt patty? Toss the burger here to start it again. Waste: <b id="burgerWasteCount">0</b></p>
+        </div>
+      </section>
+
+      <section class="station-view" id="view-shake">
+        <div class="shake-workbench workbench-v2">
+          <div class="shake-machine interactive-shake" aria-label="Milkshake workbench">
+            <div class="prep-title">THE SHAKE LAB <span>CHOOSE CUP → POUR → MIX → SYRUP</span></div>
+            <div class="size-shelf" aria-label="Choose a cup size">
+              <span class="workbench-label">PICK UP A CUP</span>
+              <button class="size-cup size-small" data-size="S" type="button"><i></i><b>S</b></button>
+              <button class="size-cup size-medium" data-size="M" type="button"><i></i><b>M</b></button>
+              <button class="size-cup size-large" data-size="L" type="button"><i></i><b>L</b></button>
+            </div>
+            <div class="pour-rig">
+              <div class="machine-face dispenser-taps">
+                <button class="tap-vanilla" data-base="vanilla" type="button" aria-label="Hold to pour vanilla"><i></i><small>VANILLA</small></button>
+                <button class="tap-chocolate" data-base="chocolate" type="button" aria-label="Hold to pour chocolate"><i></i><small>CHOCO</small></button>
+                <button class="tap-strawberry" data-base="strawberry" type="button" aria-label="Hold to pour strawberry"><i></i><small>BERRY</small></button>
+              </div>
+              <div class="nozzle"></div>
+              <div id="pourStream" class="pour-stream"></div>
+            </div>
+            <div id="shakeCup" class="shake-cup" title="Drag side-to-side to mix the shake" role="img" aria-label="Shake the cup from side to side to stir">
+              <div id="shakeLiquid" class="liquid"></div>
+              <div id="shakeSyrup" class="syrup-layer"></div>
+              <div id="shakeSwirl" class="swirl"></div>
+              <div id="shakeToppings" class="topping-layer"></div>
+              <div class="cup-logo">SS</div>
+            </div>
+            <div class="syrup-shelf">
+              <span class="workbench-label">SQUEEZE SYRUP</span>
+              <button type="button" class="syrup-bottle chocolate" data-syrup="chocolate" aria-label="Hold to squeeze chocolate syrup"><i></i><b>CHOCO</b></button>
+              <button type="button" class="syrup-bottle strawberry" data-syrup="strawberry" aria-label="Hold to squeeze strawberry syrup"><i></i><b>BERRY</b></button>
+              <button type="button" class="syrup-bottle caramel" data-syrup="caramel" aria-label="Hold to squeeze caramel syrup"><i></i><b>CARAMEL</b></button>
+            </div>
+            <div id="syrupStream" class="syrup-stream"></div>
+            <div class="machine-footer">HOLD THE DISPENSER OR BOTTLE TO POUR · DRAG THE CUP LEFT AND RIGHT TO MIX</div>
+          </div>
+          <aside class="shake-coach">
+            <div class="coach-title"><span>YOUR WORKSTATION</span><b>MAKE IT BY HAND</b></div>
+            <div class="coach-step"><b>01</b><div><strong>Pick a cup</strong><p>Choose small, medium, or large from the top shelf.</p></div></div>
+            <div class="coach-step"><b>02</b><div><strong>Pull a flavor tap</strong><p>Press and hold a flavor above the cup to fill it.</p><div class="action-meter"><i id="pourMeter"></i></div></div></div>
+            <div class="coach-step"><b>03</b><div><strong>Move the cup</strong><p>Drag the cup back and forth to blend, or use the mixer.</p><div class="stir-meter"><i id="stirMeter"></i></div><button id="stirButton" class="mixer-button" type="button">HOLD THE MIXER ↻</button></div></div>
+            <div class="coach-step"><b>04</b><div><strong>Squeeze the syrup</strong><p>Press and hold one of the squeeze bottles beside the cup.</p><div class="action-meter syrup-meter"><i id="syrupMeter"></i></div></div></div>
+            <button id="clearShake" class="reset-shake" type="button">↶ EMPTY CUP / START OVER</button>
+          </aside>
+        </div>
+      </section>
+
+      <section class="station-view" id="view-finish">
+        <div class="finish-grid finish-workbench-v2">
+          <div class="finish-card toppings-card">
+            <div class="finish-heading"><h3>FINISH THE SHAKE</h3><span>DRAG TOPPINGS ONTO THE CUP</span></div>
+            <div class="finish-preview">
+              <div class="finish-stage-label">TOPPING COUNTER</div>
+              <div id="finishCup" class="finish-cup" role="button" tabindex="0" aria-label="Place selected topping on cup">
+                <div id="finishLiquid" class="liquid"></div>
+                <div id="finishSyrup" class="syrup-layer"></div>
+                <div id="finishToppings" class="topping-layer"></div>
+                <div class="cup-logo">SS</div>
+              </div>
+              <div class="finish-splash"></div>
+            </div>
+            <div class="topping-counter" aria-label="Pick toppings from the counter">
+              <button type="button" class="topping-bowl bowl-whipped" data-topping="whipped"><span>☁️</span><b>CREAM</b></button>
+              <button type="button" class="topping-bowl bowl-sprinkles" data-topping="sprinkles"><span>🌈</span><b>SPRINKLES</b></button>
+              <button type="button" class="topping-bowl bowl-cookie" data-topping="cookie"><span>🍪</span><b>COOKIE</b></button>
+              <button type="button" class="topping-bowl bowl-strawberries" data-topping="strawberries"><span>🍓</span><b>BERRIES</b></button>
+              <button type="button" class="topping-bowl bowl-cherry" data-topping="cherry"><span>🍒</span><b>CHERRY</b></button>
+            </div>
+            <p class="topping-tip" id="finishFeedback">Grab a topping and drag it onto the cup. On touchscreens, tap a topping then tap the cup.</p>
+          </div>
+          <div class="finish-card order-clipboard">
+            <h3>YOUR CUSTOMER'S TICKET</h3>
+            <div id="buildSummary" class="build-summary">Select a ticket to start building.</div>
+            <p class="clipboard-note">Check the toppings against the ticket, then head to SERVE.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="station-view" id="view-serve">
+        <div class="serve-area">
+          <div class="serve-ticket" id="serveTicket">Select an order ticket.</div>
+          <div class="tray">
+            <div id="trayBurger" class="tray-burger">NO BURGER</div>
+            <div id="trayShake" class="tray-shake">NO SHAKE</div>
+          </div>
+          <button id="serveOrder" class="big-button" disabled>SERVE ORDER</button>
+          <p id="serveHint" class="serve-hint" role="status">Pick an order ticket first.</p>
+          <div id="scoreResult" class="score-result" role="status"></div>
+        </div>
+      </section>
+    </section>
+
+    <aside class="queue-panel">
+      <div class="panel-title"><span>LOBBY</span><b id="queueCount">0</b></div>
+      <div id="queue" class="queue"></div>
+      <div class="day-goal">
+        <small>DAY GOAL</small>
+        <strong>$75.00</strong>
+        <div><i id="goalBar"></i></div>
+        <p id="goalMessage" class="goal-message">Keep serving to reach today's goal!</p>
+      </div>
+    </aside>
+  </main>
+</div>
+<script src="app.js"></script>
+<script src="restaurant.js"></script>
+</body>
+</html>

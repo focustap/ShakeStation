@@ -44,6 +44,8 @@ test("serves a real combo using drag-and-drop food and a physical shake",async({
     const s=window.ShakeStationDebug.state(),o=s.orders[0];
     return s.builds[o.id].layers.join(",");
   })).toBe("patty,cheese,lettuce,topbun");
+  require("fs").mkdirSync("test-results/screenshots",{recursive:true});
+  await page.screenshot({path:"test-results/screenshots/desktop-burger.png",fullPage:true});
   await page.locator('[data-view="shake"]').click();
   await page.locator('[data-drag="cup:M"]').dragTo(page.locator('[data-drop="shake:0"]'));
   await expect(page.locator(".cup-visual")).toBeVisible();
@@ -59,8 +61,10 @@ test("serves a real combo using drag-and-drop food and a physical shake",async({
   }
   await page.mouse.up();
   await page.locator('[data-drag="syrup:caramel"]').dragTo(page.locator('[data-drop="shake:0"]'));
+  await page.screenshot({path:"test-results/screenshots/desktop-shake.png",fullPage:true});
   await page.locator('[data-view="finish"]').click();
   await page.locator('[data-drag="topping:cherry"]').dragTo(page.locator('[data-drop="finish-cup"]'));
+  await page.screenshot({path:"test-results/screenshots/desktop-finish.png",fullPage:true});
   await expect(page.locator('[data-action="serve"]')).toBeEnabled();
   await page.locator('[data-action="serve"]').click();
   expect(await page.evaluate(()=>window.ShakeStationDebug.state().served)).toBe(1);

@@ -97,3 +97,33 @@ test("two orders keep independent burgers and a shop purchase persists",async({p
   await page.reload();
   expect(await page.evaluate(()=>window.ShakeStationDebug.state().theme)).toBe("mint");
 });
+test("mobile kitchen remains usable and captures the redesigned stations",async({browser})=>{
+  const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,deviceScaleFactor:1});
+  const page=await context.newPage(),errors=[];
+  page.on("pageerror",e=>errors.push(String(e)));
+  await page.goto("http://127.0.0.1:4173/");
+  await expect(page.locator(".front-scene")).toBeVisible();
+  const fs=require("fs");fs.mkdirSync("test-results/screenshots",{recursive:true});
+  await page.screenshot({path:"test-results/screenshots/mobile-front.png",fullPage:true});
+  await page.locator('.take-ticket').click();
+  await page.evaluate(()=>{const D=window.ShakeStationDebug,s=D.state();s.orders[0].type="burger";s.orders[0].burger={toppings:["lettuce","tomato"]};s.orders[0].shake=null;D.renderAll()});
+  await page.locator('[data-view="burger"]').click();
+  await expect(page.locator(".ingredient-bin")).toHaveCount(5);
+  await page.screenshot({path:"test-results/screenshots/mobile-burger.png",fullPage:true});
+  await page.locator('[data-view="grill"]').click();
+  await expect(page.locator(".grill-slot")).toHaveCount(3);
+  await page.screenshot({path:"test-results/screenshots/mobile-grill.png",fullPage:true});
+  expect(errors).toEqual([]);
+  await context.close();
+});
+
+test("save migration keeps previous diner progress",async({page})=>{
+  await page.evaluate(()=>{
+    localStorage.removeItem("shakestation-studio-v2");
+    localStorage.setItem("shakestation-shifts-v1",JSON.stringify({day:4,cash:123.45,rep:78,served:15,owned:["rack","mint"],theme:"mint"}));
+  });
+  await page.reload();
+  const state=await page.evaluate(()=>window.ShakeStationDebug.state());
+  expect(state.day).toBe(4);expect(state.money).toBe(123.45);expect(state.rep).toBe(78);
+  expect(state.owned).toContain("rack");expect(state.theme).toBe("mint");
+});

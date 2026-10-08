@@ -28,7 +28,7 @@ function load(){
  return fresh;
 }
 let S=load(),drag=null,pouring=null,selectedProp=null,audio=null,toastTimer=null;
-let finishedDay=false;
+let finishedDay=false,ignoreClickUntil=0;
 function save(){
  try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}
 }
@@ -442,6 +442,7 @@ function finishDrag(e){
  const current=drag;drag=null;
  $("#dragSprite").hidden=true;$("#dragSprite").innerHTML="";
  const token=current.token;
+ if(current.distance>=9)ignoreClickUntil=Date.now()+450;
  const stage=$("#stage");
  const points=$$("[data-drop]").filter(zone=>{
   const r=zone.getBoundingClientRect();
@@ -498,6 +499,7 @@ function tick(){
  if(S.today.taken>=Core.quota(S)&&S.orders.length===0&&!finishedDay&&S.today.taken>0)showReport();
 }
 document.addEventListener("click",e=>{
+ if(Date.now()<ignoreClickUntil&&e.target.closest("[data-drag]"))return;
  const nav=e.target.closest("[data-view]");if(nav){setView(nav.dataset.view);return}
  const select=e.target.closest("[data-select]");if(select){chooseTicket(Number(select.dataset.select));return}
  const action=e.target.closest("[data-action]");
@@ -540,5 +542,5 @@ document.addEventListener("keydown",e=>{
  if(drop&&selectedProp&&(e.key==="Enter"||e.key===" ")){e.preventDefault();performDrop(selectedProp,drop.dataset.drop,{clientX:drop.getBoundingClientRect().left+drop.clientWidth/2,clientY:drop.getBoundingClientRect().top+drop.clientHeight/2},drop)}
 });
 makeGuest();renderAll();setInterval(tick,250);
-window.ShakeStationDebug={state:()=>S,Core,grillScore,performDrop,renderAll};
+window.ShakeStationDebug={state:()=>S,Core,grillScore,performDrop,renderAll,takeOrder,clickGrill,serve,addPatty,addIngredient,chooseCup,moveCup,applySyrup,topShake,dropTrash,undoBurger,trashBurger,nextDay,renderStage};
 })();
